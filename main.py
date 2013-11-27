@@ -77,14 +77,14 @@ class GameWindow(QtGui.QFrame):
         self.angle = 0
         self.length = 0
 
-         
-    def draw_Player(self, painter, Rect):
-        
+    def draw_player(self, painter, rect):
         # Draw the player
-        painter.drawRect(QtCore.QRect(QtCore.QPoint(Rect.topLeft().x() * self.x_stretch, Rect.topLeft().y() * self.y_stretch), QtCore.QPoint(Rect.bottomRight().x() * self.x_stretch, Rect.bottomRight().y() * self.y_stretch)))
+        painter.drawRect(QtCore.QRect(QtCore.QPoint(rect.topLeft().x() * self.x_stretch,
+                                                    rect.topLeft().y() * self.y_stretch),
+                                      QtCore.QPoint(rect.bottomRight().x() * self.x_stretch,
+                                                    rect.bottomRight().y() * self.y_stretch)))
     
-    def draw_Obstacles(self, painter, obst_rect_list):
-        
+    def draw_obstacles(self, painter, obst_rect_list):
         # Draw all obstacles
         for polygon in obst_rect_list:
             plist = []
@@ -92,14 +92,20 @@ class GameWindow(QtGui.QFrame):
                 plist.append(QtCore.QPoint(point.x() * self.x_stretch, point.y() * self.y_stretch))
             painter.drawPolygon(QtGui.QPolygon(plist))
         
-    def draw_Shot(self, painter, shot_line_list):
+    def draw_shot(self, painter, shot_line_list):
         
         for line in shot_line_list:
-            painter.drawLine(QtCore.QLine(QtCore.QPoint(line.p1().x() * self.x_stretch, line.p1().y() * self.y_stretch), QtCore.QPoint(line.p2().x() * self.x_stretch, line.p2().y() * self.y_stretch)))
+            painter.drawLine(QtCore.QLine(QtCore.QPoint(line.p1().x() * self.x_stretch,
+                                                        line.p1().y() * self.y_stretch),
+                                          QtCore.QPoint(line.p2().x() * self.x_stretch,
+                                                        line.p2().y() * self.y_stretch)))
         
-    def draw_IndiLine(self, painter):
+    def draw_indi_line(self, painter):
         
-        line = QtCore.QLineF(QtCore.QPoint(main_UI.game.player.center().x() * self.x_stretch, main_UI.game.player.center().y() * self.y_stretch), main_UI.game.player.center() + QtCore.QPoint(1,0))
+        line = QtCore.QLineF(QtCore.QPoint(main_UI.game.player.center().x() * self.x_stretch,
+                                           main_UI.game.player.center().y() * self.y_stretch),
+                             main_UI.game.player.center() + QtCore.QPoint(1, 0))
+
         line.setLength(main_UI.game.player.indi_line_length)
         line.setAngle(main_UI.game.player.angle)
         
@@ -158,24 +164,25 @@ class GameWindow(QtGui.QFrame):
                     memory = QtCore.QLineF(main_UI.game.player.pos, main_UI.game.player.pos + QtCore.QPoint(1, 0))
                     memory.setAngle(main_UI.game.player.angle)
                     memory.setLength(main_UI.game.player.shot.max_length)
-                    main_UI.game.player.shot.tryShot(main_UI.game.player.center(), memory.p2())
+                    main_UI.game.player.shot.try_shot(main_UI.game.player.center(), memory.p2())
                 elif key == QtCore.Qt.Key_X:
                     print(str(main_UI.game.map.view_size))
-                    main_UI.game.map.changeViewSize(main_UI.game.map.view_size.width() + 1,
-                                                    main_UI.game.map.view_size.height() + 1)
+
+                    main_UI.game.map.change_view_size(main_UI.game.map.view_size.width() + 1,
+                                                      main_UI.game.map.view_size.height() + 1)
 
             # The next move is the player position + next_move_dir
             # to amplify move Speed, the next_move_dir is multiplied with self.move_speed
             if main_UI.game.player.next_move_dir.x() != 0 or main_UI.game.player.next_move_dir.y() != 0:
-                main_UI.game.player.tryMove(main_UI.game.player.pos, main_UI.game.player.next_move_dir,
-                                            main_UI.game.player.move_speed)
+                main_UI.game.player.try_move(main_UI.game.player.pos, main_UI.game.player.next_move_dir,
+                                             main_UI.game.player.move_speed)
             
             # do all logic here in the future
             
             # Update the scene AFTER all logic work
             self.update()
             
-    def changeStretch(self):
+    def change_stretch(self):
         
         self.x_stretch = self.width() / float(main_UI.game.map.view_size.width())
         self.y_stretch = self.height() / float(main_UI.game.map.view_size.height())
@@ -188,10 +195,10 @@ class GameWindow(QtGui.QFrame):
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         
         # Player gets drawn
-        self.draw_Player(painter, QtCore.QRect(main_UI.game.player.pos, main_UI.game.player.size))
+        self.draw_player(painter, QtCore.QRect(main_UI.game.player.pos, main_UI.game.player.size))
         
         # Obstacles get drawn
-        self.draw_Obstacles(painter, main_UI.game.map.obstacle_list)
+        self.draw_obstacles(painter, main_UI.game.map.obstacle_list)
         
         # Shot computation
         if main_UI.game.player.shot.timer.isActive():
@@ -208,16 +215,16 @@ class GameWindow(QtGui.QFrame):
             # Iterate through the loop until the remaining length = 0
             # It then executes the else statement
             while self.length > 0.0:
-                self.shot_end_pos, self.angle, self.length = main_UI.game.player.shot.computeShot(self.shot_start_pos,
-                                                                                                  self.angle,
-                                                                                                  self.length)
+                self.shot_end_pos, self.angle, self.length = main_UI.game.player.shot.compute_shot(self.shot_start_pos,
+                                                                                                   self.angle,
+                                                                                                   self.length)
                 self.shot_line_list.append(QtCore.QLineF(QtCore.QPointF(self.shot_start_pos), self.shot_end_pos))
                 self.shot_start_pos = self.shot_end_pos
         
-            self.draw_Shot(painter, self.shot_line_list)
+            self.draw_shot(painter, self.shot_line_list)
 
         # Draw angle indicator
-        self.draw_IndiLine(painter)
+        self.draw_indi_line(painter)
                 
         # TEST
         self.drawFrame(painter)
@@ -234,48 +241,48 @@ class Map():
         # Contains the outlines of every obstacle element that is in the map
         self.outlines_list = []
 
-        # def LoadfromTest variable definition
+        # def load_from_test variable definition
         self.size = 0
         self.view_size = 0
         
         # Init the map and declare which map to use
         if load_type == 'debug':
             # Just load the debug map
-            self.loadfromTest()
+            self.load_from_test()
         else:
             print('load_type not supported')
             
-    def addObstacle(self, point_list):
+    def add_obstacle(self, point_list):
         
         # Create the obstacle
         obstacle = Obstacle(point_list)
         
         # Add the obstacle to the lists obstacle_list and outlines_list
         self.obstacle_list.append(obstacle.polygon)
-        self.outlines_list.append(obstacle.Outlines())
+        self.outlines_list.append(obstacle.outlines())
         
-    def loadfromTest(self):
+    def load_from_test(self):
         
         # This method loads up a debugging map which is declared in here
         self.size = QtCore.QSize(800, 600)
         self.view_size = QtCore.QSize(300, 300)
-        self.addObstacle([QtCore.QPoint(100, 100),
+        self.add_obstacle([QtCore.QPoint(100, 100),
                           QtCore.QPoint(390, 100),
                           QtCore.QPoint(390, 290),
                           QtCore.QPoint(100, 290)])
 
-        self.addObstacle([QtCore.QPoint(500, 500),
+        self.add_obstacle([QtCore.QPoint(500, 500),
                           QtCore.QPoint(690, 500),
                           QtCore.QPoint(790, 590),
                           QtCore.QPoint(500, 590)])
         
-    def changeViewSize(self, w, h):
+    def change_view_size(self, w, h):
         if w <= main_UI.game_window.width():
             self.view_size.setWidth(w)
         if h <= main_UI.game_window.height():
             self.view_size.setHeight(h)
             
-        main_UI.game_window.changeStretch()
+        main_UI.game_window.change_stretch()
 
 
 class Shot():
@@ -287,7 +294,7 @@ class Shot():
         self.shot_up_time = 400  # ms how long the shot should be visible
         self.max_length = 1000
 
-        # ComputeShot variable definition
+        # compute_shot variable definition
         self.obst_outlines_list = []
         self.intersection = 0
         self.max_line = 0
@@ -299,7 +306,7 @@ class Shot():
         QtCore.QTimer.setSingleShot(self.timer, True)
         self.timer.stop()
         
-    def tryShot(self, s_point, e_point):
+    def try_shot(self, s_point, e_point):
         # Try to set new shot
         # This is only possible if the old shot has faded away
         if not self.timer.isActive():
@@ -309,10 +316,10 @@ class Shot():
             self.timer.start()
             
             # EARLY SOUNDS
-            winsound.PlaySound(os.path.dirname(__file__) + '\data\shot' + str(random.randint(0,1) + 1) + '.wav',
+            winsound.PlaySound(os.path.dirname(__file__) + '\data\shot' + str(random.randint(0, 1) + 1) + '.wav',
                                winsound.SND_ASYNC)
             
-    def computeShot(self, start_point,  angle, length):
+    def compute_shot(self, start_point,  angle, length):
         # Returns the end point of the shot
         # whether its the actual end or just a collision with an obstacle can be seen in var Length
         # if remaining Length is 0 after calling the method, its the actual endpoint of the line
@@ -322,7 +329,7 @@ class Shot():
         # Therefore it CHANGES var angle and var length
 
         # Create the ideal line
-        self.max_line = QtCore.QLineF(start_point, start_point + QtCore.QPoint(1,0))
+        self.max_line = QtCore.QLineF(start_point, start_point + QtCore.QPoint(1, 0))
         self.max_line.setLength(length)
         self.max_line.setAngle(angle)
         
@@ -363,10 +370,14 @@ class Shot():
 
 
 class Obj():
+
+    def __init__(self):
+        pass
+
     def center(self):
         return QtCore.QRect(self.pos, self.size).center()
     
-    def Outlines(self):
+    def outlines(self):
         
         # Iterate through every index of polygon
         # every index represents a point
@@ -403,9 +414,9 @@ class Player(Obj):
         self.indi_line_length = 30
         self.move_speed = 5
         
-        self.next_move_dir = QtCore.QPoint(0,0)
+        self.next_move_dir = QtCore.QPoint(0, 0)
         
-    def tryMove(self, pos, move_dir, ms):
+    def try_move(self, pos, move_dir, ms):
         # Generate the new positions
         # Go through every possible new position in the direction (dir)
         # Start with full move speed (ms) and if it does not work, try the next lower step
@@ -441,7 +452,7 @@ class Player(Obj):
                 else: 
                     # Getting here means no break was thrown
                     # No obstacle in the way
-                    self.forceMove(new_rect.topLeft())
+                    self.force_move(new_rect.topLeft())
                     return True
             else:
                 # Positions are outside the window
@@ -451,9 +462,9 @@ class Player(Obj):
             # Not even the smallest possible step (1) was possible
             return False
     
-    def forceMove(self, point):
+    def force_move(self, point):
         # Force a move command
-        # Don't use! Use tryMove() instead.
+        # Don't use! Use try_move() instead.
         self.pos = point
         
 if __name__ == '__main__':
