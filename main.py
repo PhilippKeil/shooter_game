@@ -9,25 +9,24 @@ if sys.platform == 'win32':
     import winsound
     winsound.PlaySound(os.path.dirname(__file__) + '\data\intro.wav', winsound.SND_ASYNC)
 
+
 class Window(QtGui.QWidget):
     
     def __init__(self):
         # Initialize the window
         super(Window, self).__init__()
-        # Set up the UI
-        self.initUI()
         
-    def initUI(self):
-        self.setGeometry(0,0,820,620)
+        # Set up the UI 
+        self.setGeometry(0, 0, 820, 620)
         # Move the window to the screen center
         self.move(self.center(self.frameGeometry(), QtGui.QDesktopWidget().frameGeometry()))
         # Init the Game
         self.game = Game()
-        self.game_Window = Game_Window(self)
+        self.game_window = GameWindow(self)
         
         # Take care of the Layout
         hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(self.game_Window)
+        hbox.addWidget(self.game_window)
         vbox = QtGui.QVBoxLayout()
         vbox.addLayout(hbox)
         self.setLayout(vbox)
@@ -35,26 +34,28 @@ class Window(QtGui.QWidget):
         self.setWindowTitle('Shooter')
         self.show()
         
-    def center(self, widgetFrame, targetFrame):
-        widgetFrame.moveCenter(targetFrame.center())
-        return widgetFrame.topLeft()
-    
+    def center(self, widget_frame, target_frame):
+        widget_frame.moveCenter(target_frame.center())
+        return widget_frame.topLeft()
+
+
 class Game():
     
     gameCycleInterval = 10 # Time in ms
     
     def __init__(self):
         self.map = Map('debug')
-        self.player = Player(1,1,20,20)
-    
-class Game_Window(QtGui.QFrame):
+        self.player = Player(1, 1, 20, 20)
+
+
+class GameWindow(QtGui.QFrame):
     
     def __init__(self, parent):
         
         # Init the UI element
         QtGui.QFrame.__init__(self, parent)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.setFixedSize(800,600)
+        self.setFixedSize(800, 600)
         self.setFrameStyle(QtGui.QFrame.Box)
         
         self.xStretch = self.width() / float(parent.game.map.viewSize.width())
@@ -211,7 +212,8 @@ class Game_Window(QtGui.QFrame):
         self.drawFrame(painter)
               
         painter.end()
-        
+
+
 class Map():
     
     def __init__(self, loadType):
@@ -246,12 +248,13 @@ class Map():
         self.addObstacle([QtCore.QPoint(500,500), QtCore.QPoint(690,500), QtCore.QPoint(790,590), QtCore.QPoint(500,590)])
         
     def changeViewSize(self, w, h):
-        if w <= main_UI.game_Window.width():
+        if w <= main_UI.game_window.width():
             self.viewSize.setWidth(w)
-        if h <= main_UI.game_Window.height():
+        if h <= main_UI.game_window.height():
             self.viewSize.setHeight(h)
             
-        main_UI.game_Window.changeStretch()
+        main_UI.game_window.changeStretch()
+
 
 class Shot():
     
@@ -332,7 +335,8 @@ class Shot():
         self.maxLine.setLength(self.maxLine.length() - 1)
         
         return (self.maxLine.p2(), angle, length)      
-        
+
+
 class Obj():
     def center(self):
         return QtCore.QRect(self.pos, self.size).center()
@@ -359,7 +363,8 @@ class Obstacle(Obj):
     
     def __init__(self, pointList):
         self.polygon = QtGui.QPolygon(pointList)
-        
+
+
 class Player(Obj):
     
     def __init__(self, x, y, w, h):
