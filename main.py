@@ -372,7 +372,9 @@ class Shot():
 class Obj():
 
     def __init__(self):
-        pass
+        self.pos = None
+        self.size = None
+        self.polygon = None
 
     def center(self):
         return QtCore.QRect(self.pos, self.size).center()
@@ -396,24 +398,22 @@ class Obj():
     
     
 class Obstacle(Obj):
-    
     def __init__(self, point_list):
+        Obj.__init__(self)
         self.polygon = QtGui.QPolygon(point_list)
 
 
 class Player(Obj):
     
     def __init__(self, x, y, w, h):
-         
+        Obj.__init__(self)
         self.pos = QtCore.QPoint(x, y)
         self.size = QtCore.QSize(w, h)
         self.shot = Shot()
-        
         self.turn_speed = 2
         self.angle = 0
         self.indi_line_length = 30
         self.move_speed = 5
-        
         self.next_move_dir = QtCore.QPoint(0, 0)
         
     def try_move(self, pos, move_dir, ms):
