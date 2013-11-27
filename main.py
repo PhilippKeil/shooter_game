@@ -46,7 +46,7 @@ class Game():
     
     def __init__(self):
         self.map = Map('debug')
-        self.player = Player(1, 1, 20, 20)
+        self.player = Player(1, 1, 10, 10)
 
 
 class GameWindow(QtGui.QFrame):
