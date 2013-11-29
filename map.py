@@ -52,8 +52,6 @@ class Map():
         if height <= frame_size.height():
             self.view_size.setHeight(height)
 
-        main_UI.game_window.change_stretch()
-
 
 class Obj():
     def __init__(self):

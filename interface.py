@@ -142,18 +142,22 @@ class GameWindow(QtGui.QFrame):
 
                 elif key == QtCore.Qt.Key_Space:
                     # Shot
-                    memory = QtCore.QLineF(self.game.player_1.pos, main_UI.game.player.pos + QtCore.QPoint(1, 0))
-                    memory.setAngle(main_UI.game.player.angle)
-                    memory.setLength(main_UI.game.player.shot.max_length)
-                    self.game.try_shot(self.game.player_1, main_UI.game.player.center(), memory.p2())
+                    tmp_line = QtCore.QLineF(QtCore.QPointF(self.game.get_player_pos(self.game.player_1)),
+                                             QtCore.QPointF(self.game.get_player_pos(self.game.player_1) +
+                                                            QtCore.QPoint(1, 0)))
+
+                    tmp_line.setAngle(self.game.get_player_angle(self.game.player_1))
+                    tmp_line.setLength(self.game.get_shot_maximum_length(self.game.player_1))
+                    self.game.try_shot(self.game.player_1,
+                                       QtCore.QRect(self.game.get_player_pos(self.game.player_1),
+                                                    self.game.get_player_size(self.game.player_1)).center(),
+                                       tmp_line.p2())
 
                 elif key == QtCore.Qt.Key_X:
                     # Zoom
                     self.game.change_viewable_map_area(self.game.get_viewable_map_area() + QtCore.QSize(1, 1),
                                                        self.size())
-
-                    main_UI.game.map.change_view_size(main_UI.game.map.view_size.width() + 1,
-                                                      main_UI.game.map.view_size.height() + 1)
+                    self.change_stretch()
 
             # The next move is the player position + next_move_dir
             # to amplify move Speed, the next_move_dir is multiplied with self.move_speed
@@ -167,8 +171,8 @@ class GameWindow(QtGui.QFrame):
 
     def change_stretch(self):
 
-        self.x_stretch = self.width() / float(main_UI.game.map.view_size.width())
-        self.y_stretch = self.height() / float(main_UI.game.map.view_size.height())
+        self.x_stretch = self.width() / float(self.game.get_viewable_map_area().width())
+        self.y_stretch = self.height() / float(self.game.get_viewable_map_area().height())
 
     def paintEvent(self, event):
         """Reimplementation of the paint Event"""

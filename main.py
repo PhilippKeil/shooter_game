@@ -56,7 +56,11 @@ class Game():
             return []
 
         # Return the list of lines
-        return player.shot.get_whole_shot(self.map.outlines_list)
+        return player.shot.current_shot
+
+    @staticmethod
+    def get_shot_maximum_length(player):
+        return player.shot.max_length
 
     @staticmethod
     def get_player_pos(player):
@@ -74,9 +78,8 @@ class Game():
     def get_player_angle(player):
         return player.angle
 
-    @staticmethod
-    def try_shot(player, start_point, end_point):
-        player.shot.try_shot(start_point, end_point)
+    def try_shot(self, player, start_point, end_point):
+        player.shot.try_shot(start_point, end_point, self.map.outlines_list)
 
     def change_viewable_map_area(self, size, frame_size):
         self.map.change_view_size(size.width(), size.height(), frame_size)
