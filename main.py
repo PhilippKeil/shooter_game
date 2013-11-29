@@ -23,7 +23,8 @@ class Game():
             player.force_move(new_player_pos)
             return True
 
-    def turn_player(self, player, direction):
+    @staticmethod
+    def turn_player(player, direction):
         """Turns the player in direction. Returns False if direction was not specified correctly."""
         result = False
 
@@ -48,7 +49,8 @@ class Game():
     def get_obstacle_list(self):
         return self.map.obstacle_list
 
-    def get_shot(self, player):
+    @staticmethod
+    def get_shot(player):
         """Returns a list of lines which represent the shot the given player is currently firing.
            Returns an empty list if no shot is fired."""
         if not player.shot.timer.isActive():

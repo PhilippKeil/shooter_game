@@ -2,13 +2,14 @@ import sys
 import os
 from PyQt4 import QtGui
 from PyQt4 import QtCore
+from PyQt4.QtCore import QPoint as Qp
+from PyQt4.QtCore import QPointF as Qpf
+from PyQt4.QtCore import QRect as Qr
+from PyQt4.QtCore import QLine as Ql
+from PyQt4.QtCore import QLineF as Qlf
+from PyQt4.QtCore import QSize as Qs
 
 from main import Game
-
-# If the system is Windows, import winsound lib to do the audio
-if sys.platform == 'win32':
-    import winsound
-    winsound.PlaySound(os.path.dirname(__file__) + '\data\intro.wav', winsound.SND_ASYNC)
 
 
 class Window(QtGui.QWidget):
@@ -53,34 +54,25 @@ class GameWindow(QtGui.QFrame):
 
         # Var definition
         self.key_list = []
-        self.you_rect = QtCore.QRect()  # Never used????
-        self.obst_outlines_list = []
-        self.intersection = QtCore.QPointF()
+
         self.game_cycle_timer = QtCore.QBasicTimer()
         self.game_cycle_timer.start(Game.gameCycleInterval, self)
 
-        # Shot functions definitions
-        self.shot_start_pos = 0
-        self.shot_end_pos = 0
-        self.shot_line_list = []
-        self.angle = 0
-        self.length = 0
-
     def draw_player(self, painter, player):
         """Draws the player"""
-        rect = QtCore.QRect(player.pos, player.size)
+        rect = Qr(player.pos, player.size)
 
-        painter.drawRect(QtCore.QRect(QtCore.QPoint(rect.topLeft().x() * self.x_stretch,
-                                                    rect.topLeft().y() * self.y_stretch),
-                                      QtCore.QPoint(rect.bottomRight().x() * self.x_stretch,
-                                                    rect.bottomRight().y() * self.y_stretch)))
+        painter.drawRect(Qr(Qp(rect.topLeft().x() * self.x_stretch,
+                               rect.topLeft().y() * self.y_stretch),
+                            Qp(rect.bottomRight().x() * self.x_stretch,
+                               rect.bottomRight().y() * self.y_stretch)))
 
     def draw_obstacles(self, painter, obstacle_list):
         """Draws obstacles"""
         for polygon in obstacle_list:
             point_list = []
             for point in polygon:
-                point_list.append(QtCore.QPoint(point.x() * self.x_stretch, point.y() * self.y_stretch))
+                point_list.append(Qp(point.x() * self.x_stretch, point.y() * self.y_stretch))
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
     def draw_shot(self, painter, player):
@@ -91,17 +83,17 @@ class GameWindow(QtGui.QFrame):
             return
 
         for line in shot_line_list:
-            painter.drawLine(QtCore.QLine(QtCore.QPoint(line.p1().x() * self.x_stretch,
-                                                        line.p1().y() * self.y_stretch),
-                                          QtCore.QPoint(line.p2().x() * self.x_stretch,
-                                                        line.p2().y() * self.y_stretch)))
+            painter.drawLine(Ql(Qp(line.p1().x() * self.x_stretch,
+                                   line.p1().y() * self.y_stretch),
+                                Qp(line.p2().x() * self.x_stretch,
+                                   line.p2().y() * self.y_stretch)))
 
     def draw_direction_indicator_line(self, painter, player):
 
-        player_rectangle = QtCore.QRect(self.game.get_player_pos(player), self.game.get_player_size(player))
-        line = QtCore.QLineF(QtCore.QPointF(player_rectangle.center().x() * self.x_stretch,
-                                            player_rectangle.center().y() * self.y_stretch),
-                             QtCore.QPointF(player_rectangle.center() + QtCore.QPoint(1, 0)))
+        player_rectangle = Qr(self.game.get_player_pos(player), self.game.get_player_size(player))
+        line = Qlf(Qpf(player_rectangle.center().x() * self.x_stretch,
+                       player_rectangle.center().y() * self.y_stretch),
+                   Qpf(player_rectangle.center() + Qp(1, 0)))
 
         line.setLength(self.game.get_player_direction_indicator_line_length(player))
         line.setAngle(self.game.get_player_angle(player))
@@ -114,7 +106,7 @@ class GameWindow(QtGui.QFrame):
 
             # Check for key presses and save next move in next_move_dir
             # Reset next_move_dir
-            next_move_dir = QtCore.QPoint(0, 0)
+            next_move_dir = Qp(0, 0)
 
             for a in range(len(self.key_list)):
                 key = self.key_list[a]
@@ -142,20 +134,18 @@ class GameWindow(QtGui.QFrame):
 
                 elif key == QtCore.Qt.Key_Space:
                     # Shot
-                    tmp_line = QtCore.QLineF(QtCore.QPointF(self.game.get_player_pos(self.game.player_1)),
-                                             QtCore.QPointF(self.game.get_player_pos(self.game.player_1) +
-                                                            QtCore.QPoint(1, 0)))
+                    tmp_line = Qlf(Qpf(self.game.get_player_pos(self.game.player_1)),
+                                   Qpf(self.game.get_player_pos(self.game.player_1) + Qp(1, 0)))
 
                     tmp_line.setAngle(self.game.get_player_angle(self.game.player_1))
                     tmp_line.setLength(self.game.get_shot_maximum_length(self.game.player_1))
                     self.game.try_shot(self.game.player_1,
-                                       QtCore.QRect(self.game.get_player_pos(self.game.player_1),
-                                                    self.game.get_player_size(self.game.player_1)).center(),
-                                       tmp_line.p2())
+                                       Qr(self.game.get_player_pos(self.game.player_1),
+                                          self.game.get_player_size(self.game.player_1)).center(), tmp_line.p2())
 
                 elif key == QtCore.Qt.Key_X:
                     # Zoom
-                    self.game.change_viewable_map_area(self.game.get_viewable_map_area() + QtCore.QSize(1, 1),
+                    self.game.change_viewable_map_area(self.game.get_viewable_map_area() + Qs(1, 1),
                                                        self.size())
                     self.change_stretch()
 
@@ -170,7 +160,6 @@ class GameWindow(QtGui.QFrame):
             self.update()
 
     def change_stretch(self):
-
         self.x_stretch = self.width() / float(self.game.get_viewable_map_area().width())
         self.y_stretch = self.height() / float(self.game.get_viewable_map_area().height())
 
