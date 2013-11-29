@@ -174,14 +174,10 @@ class GameWindow(QtGui.QFrame):
 
         self.draw_player(painter, self.game.player_1)
         self.draw_shot(painter, self.game.player_1)
-
         self.draw_obstacles(painter, self.game.get_obstacle_list())
-
-        # Draw angle indicator
         self.draw_direction_indicator_line(painter, self.game.player_1)
 
         # TEST
-        self.drawFrame(painter)
 
         painter.end()
 
