@@ -177,8 +177,6 @@ class GameWindow(QtGui.QFrame):
         self.draw_obstacles(painter, self.game.get_obstacle_list())
         self.draw_direction_indicator_line(painter, self.game.player_1)
 
-        # TEST
-
         painter.end()
 
     def keyPressEvent(self, event):
