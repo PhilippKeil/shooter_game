@@ -47,7 +47,7 @@ class Map():
             # Create an obstacle
             obstacle = Obstacle(d)
             # Add the obstacle to the lists obstacle_list and outlines_list
-            self.obstacle_list.append(obstacle.polygon)
+            self.obstacle_list.append(obstacle)
             self.outlines_list.append(obstacle.outlines())
         else:
             print('Could not create object. No type defined')
@@ -62,7 +62,8 @@ class Map():
                          'position': QtCore.QPoint(50, 50),
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
-                         'move_speed': 5})
+                         'move_speed': 5,
+                         'brush': QtCore.Qt.SolidPattern})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(100, 0),
@@ -70,7 +71,8 @@ class Map():
                                       QtCore.QPoint(200, 100),
                                       QtCore.QPoint(200, 0)],
                          'color': QtCore.Qt.blue,
-                         'brush': QtCore.Qt.SolidPattern,
+                         'brush': QtCore.Qt.TexturePattern,
+                         'texture': QtGui.QPixmap('wood_texture.bmp'),
                          'pen': QtCore.Qt.DotLine})
 
         self.add_object({'type': 'obstacle',

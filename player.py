@@ -8,6 +8,11 @@ class Player():
         self.turn_speed = player_information['turn_speed']
         self.move_speed = player_information['move_speed']
 
+        if 'brush' in player_information:
+            self.brush = player_information['brush']
+        if 'pen' in player_information:
+            self.pen = player_information['pen']
+
         self.shot = Shot()
         self.angle = 0
         self.indi_line_length = 30
@@ -31,10 +36,14 @@ class Player():
 
                 # Iterate through the list of obstacles
                 for a in range(len(obstacle_list)):
-                    if obstacle_list[a].containsPoint(new_rect.topLeft(), QtCore.Qt.OddEvenFill) % 2 == 1 or \
-                            obstacle_list[a].containsPoint(new_rect.topRight(), QtCore.Qt.OddEvenFill) % 2 == 1 or \
-                            obstacle_list[a].containsPoint(new_rect.bottomRight(), QtCore.Qt.OddEvenFill) % 2 == 1 or \
-                            obstacle_list[a].containsPoint(new_rect.bottomLeft(), QtCore.Qt.OddEvenFill) % 2 == 1:
+                    if obstacle_list[a].polygon.containsPoint(new_rect.topLeft(),
+                                                              QtCore.Qt.OddEvenFill) % 2 == 1 or \
+                            obstacle_list[a].polygon.containsPoint(new_rect.topRight(),
+                                                                   QtCore.Qt.OddEvenFill) % 2 == 1 or \
+                            obstacle_list[a].polygon.containsPoint(new_rect.bottomRight(),
+                                                                   QtCore.Qt.OddEvenFill) % 2 == 1 or \
+                            obstacle_list[a].polygon.containsPoint(new_rect.bottomLeft(),
+                                                                   QtCore.Qt.OddEvenFill) % 2 == 1:
 
                         # The player is inside an obstacle
                         # Break out of the loop because if player contains one obstacle its worthless to check any other
@@ -64,16 +73,6 @@ class Player():
 
     def get_size(self):
         return self.size
-
-    def get_shot(self):
-        """Returns shot of the player. Returns an empty list if no shot is fired"""
-
-        # Return an empty list if no shot is fired
-        if not self.shot.timer.isActive():
-            return []
-
-        # Return the list of lines
-        return self.shot.compute_shot()
 
 
 class Shot():

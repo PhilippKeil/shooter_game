@@ -55,38 +55,6 @@ class GameWindow(QtGui.QFrame):
         # Create a game instance
         self.game = Game()
 
-        # Painter setup
-        self.texture_list = ['wood_texture.bmp', 'player_texture.bmp']
-        self.textures = []
-        for texture in self.texture_list:
-            self.textures.append(QtGui.QPixmap())
-            if self.textures[len(self.textures) - 1].load(texture):
-                print('loaded ' + texture)
-            else:
-                print('Failed to load ' + texture)
-
-        self.obstacle_pen = QtGui.QPen()
-        self.obstacle_pen.setStyle(QtCore.Qt.SolidLine)
-        self.obstacle_pen.setWidth(0)
-
-        self.obstacle_brush = QtGui.QBrush()
-        self.obstacle_brush.setTexture(self.textures[0])
-        self.obstacle_brush.setStyle(QtCore.Qt.TexturePattern)
-
-        self.player_pen = QtGui.QPen()
-        self.player_pen.setStyle(QtCore.Qt.SolidLine)
-        self.player_pen.setWidth(0)
-
-        self.player_brush = QtGui.QBrush()
-        self.player_brush.setTexture(self.textures[1])
-        self.player_brush.setStyle(QtCore.Qt.TexturePattern)
-
-        self.shot_pen = QtGui.QPen()
-        self.shot_pen.setStyle(QtCore.Qt.DashLine)
-        self.shot_pen.setColor(QtCore.Qt.blue)
-
-        # End of painter setup
-
         # Var definition
         self.key_list = []
 
@@ -96,8 +64,11 @@ class GameWindow(QtGui.QFrame):
     def draw_player(self, painter, player):
         """Draws the player"""
         rect = Qr(player.pos, player.size)
-        painter.setBrush(self.player_brush)
-        painter.setPen(self.player_pen)
+
+        if hasattr(player, 'brush'):
+            painter.setBrush(player.brush)
+        if hasattr(player, 'pen'):
+            painter.setPen(player.pen)
 
         painter.drawRect(Qr(Qp(rect.topLeft().x() * self.x_stretch,
                                rect.topLeft().y() * self.y_stretch),
@@ -106,18 +77,21 @@ class GameWindow(QtGui.QFrame):
 
     def draw_obstacles(self, painter, obstacle_list):
         """Draws obstacles"""
-        painter.setBrush(self.obstacle_brush)
-        painter.setPen(self.obstacle_pen)
 
         for polygon in obstacle_list:
             point_list = []
-            for point in polygon:
+
+            if hasattr(polygon, 'brush'):
+                painter.setBrush(polygon.brush)
+            if hasattr(polygon, 'pen'):
+                painter.setPen(polygon.pen)
+
+            for point in polygon.polygon:
                 point_list.append(Qp(point.x() * self.x_stretch, point.y() * self.y_stretch))
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
     def draw_shot(self, painter, player):
         """Draws shot of the player"""
-        painter.setPen(self.shot_pen)
 
         shot_line_list = self.game.get_shot(player)
         if not shot_line_list:
@@ -130,7 +104,6 @@ class GameWindow(QtGui.QFrame):
                                    line.p2().y() * self.y_stretch)))
 
     def draw_direction_indicator_line(self, painter, player):
-        painter.setPen(self.shot_pen)
 
         player_rectangle = Qr(self.game.get_player_pos(player), self.game.get_player_size(player))
         line = Qlf(Qpf(player_rectangle.center().x() * self.x_stretch,
@@ -234,7 +207,6 @@ class GameWindow(QtGui.QFrame):
         self.key_list.append(key)
 
     def keyReleaseEvent(self, event):
-
         # Remove the pressed key from key_list
         # It contains every currently pressed key
         key = event.key()
