@@ -46,10 +46,14 @@ class Map():
             self.player_information = d
         elif d['type'] == 'obstacle':
             # Create an obstacle
-            obstacle = Obstacle(d)
-            # Add the obstacle to the lists obstacle_list and outlines_list
-            self.obstacle_list.append(obstacle)
-            self.outlines_list.append(obstacle.outlines())
+            try:
+                obstacle = Obstacle(d)
+            except ValueError as e:
+                print('Could not create obstacle because ' + e.message)
+            else:
+                # Add the obstacle to the lists obstacle_list and outlines_list
+                self.obstacle_list.append(obstacle)
+                self.outlines_list.append(obstacle.outlines())
         else:
             print('Could not create object. No type defined')
 
@@ -109,27 +113,33 @@ class Obstacle():
         if 'position' in d:
             self.polygon = QtGui.QPolygon(d['position'])
         else:
-            print('No position parameter given')
-
-        if 'color' in d:
-            self.color = d['color']
-        else:
-            print('No color parameter given')
+            # Raise an error
+            raise ValueError('No positions were given')
 
         if 'brush' in d:
             self.brush = d['brush']
         else:
             print('No brush parameter given')
 
-        if 'pen' in d:
-            self.pen = d['pen']
+        if 'brush_color' in d:
+            self.brush_color = d['color']
         else:
-            print('no pen parameter given')
+            print('No brush_color parameter given')
 
         if 'texture' in d:
             self.texture = d['texture']
         else:
             print('No texture parameter given')
+
+        if 'pen' in d:
+            self.pen = d['pen']
+        else:
+            print('no pen parameter given')
+
+        if 'pen_color' in d:
+            self.pen_color = d['pen']
+        else:
+            print('no pen_color parameter given')
 
     def outlines(self):
         # Iterate through every index of polygon

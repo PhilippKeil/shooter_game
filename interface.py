@@ -10,6 +10,15 @@ from PyQt4.QtCore import QSize as Qs
 
 from main import Game
 
+defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
+            'obstacle_brush_color': QtCore.Qt.red,
+            'obstacle_pen': QtCore.Qt.SolidLine,
+            'obstacle_pen_color': QtCore.Qt.red,
+            'player_brush': QtCore.Qt.SolidPattern,
+            'player_brush_color': QtCore.Qt.red,
+            'player_pen': QtCore.Qt.SolidLine,
+            'player_pen_color': QtCore.Qt.red}
+
 
 class Window(QtGui.QWidget):
     def __init__(self):
@@ -66,8 +75,12 @@ class GameWindow(QtGui.QFrame):
 
         if hasattr(player, 'brush'):
             painter.setBrush(player.brush)
+        else:
+            painter.setBrush(defaults['player_brush'])
         if hasattr(player, 'pen'):
             painter.setPen(player.pen)
+        else:
+            painter.setPen(defaults['player_pen'])
 
         painter.drawRect(Qr(Qp(rect.topLeft().x() * self.x_stretch,
                                rect.topLeft().y() * self.y_stretch),
