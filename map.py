@@ -71,7 +71,6 @@ class Map():
                                       QtCore.QPoint(200, 100),
                                       QtCore.QPoint(200, 0)],
                          'color': QtCore.Qt.blue,
-                         'brush': QtCore.Qt.TexturePattern,
                          'texture': 'wood_texture.bmp',
                          'pen': QtCore.Qt.DotLine})
 
