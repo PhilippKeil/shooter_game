@@ -17,14 +17,10 @@ class Window(QtGui.QWidget):
         # Initialize the window
         super(Window, self).__init__()
 
-        # Set up the UI
-        self.setGeometry(0, 0, 820, 620)
-
-        # Move the window to the screen center
-        self.move(center(self.frameGeometry(), QtGui.QDesktopWidget().frameGeometry()))
-
         # Create a canvas for the game to run inside
         self.game_window = GameWindow(self)
+        self.game_window.setFrameStyle(QtGui.QFrame.Box)
+        self.game_window.setFocusPolicy(QtCore.Qt.StrongFocus)
 
         # Layout management
         hbox = QtGui.QHBoxLayout()
@@ -34,7 +30,21 @@ class Window(QtGui.QWidget):
         self.setLayout(vbox)
 
         self.setWindowTitle('Shooter')
-        self.show()
+
+        self.fullscreen = False
+
+        if self.fullscreen:
+            self.setGeometry(QtGui.QDesktopWidget.availableGeometry(QtGui.QApplication.desktop()))
+            self.game_window.setFixedSize(self.height(), self.height())
+            self.game_window.change_stretch()
+            self.showFullScreen()
+            print('starting in fullscreen')
+        else:
+            self.setGeometry(1, 1, 500, 500)
+            self.move(center(self.frameGeometry(), QtGui.QDesktopWidget().frameGeometry()))
+            self.game_window.setFixedSize(self.width(), self.height())
+            self.game_window.change_stretch()
+            self.show()
 
 
 class GameWindow(QtGui.QFrame):
@@ -42,15 +52,40 @@ class GameWindow(QtGui.QFrame):
         # Initialize the UI element
         QtGui.QFrame.__init__(self, parent)
 
-        self.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.setFixedSize(800, 600)
-        self.setFrameStyle(QtGui.QFrame.Box)
-
         # Create a game instance
         self.game = Game()
 
-        self.x_stretch = self.width() / float(self.game.get_viewable_map_area().width())
-        self.y_stretch = self.height() / float(self.game.get_viewable_map_area().height())
+        # Painter setup
+        self.texture_list = ['wood_texture.bmp', 'player_texture.bmp']
+        self.textures = []
+        for texture in self.texture_list:
+            self.textures.append(QtGui.QPixmap())
+            if self.textures[len(self.textures) - 1].load(texture):
+                print('loaded ' + texture)
+            else:
+                print('Failed to load ' + texture)
+
+        self.obstacle_pen = QtGui.QPen()
+        self.obstacle_pen.setStyle(QtCore.Qt.SolidLine)
+        self.obstacle_pen.setWidth(0)
+
+        self.obstacle_brush = QtGui.QBrush()
+        self.obstacle_brush.setTexture(self.textures[0])
+        self.obstacle_brush.setStyle(QtCore.Qt.TexturePattern)
+
+        self.player_pen = QtGui.QPen()
+        self.player_pen.setStyle(QtCore.Qt.SolidLine)
+        self.player_pen.setWidth(0)
+
+        self.player_brush = QtGui.QBrush()
+        self.player_brush.setTexture(self.textures[1])
+        self.player_brush.setStyle(QtCore.Qt.TexturePattern)
+
+        self.shot_pen = QtGui.QPen()
+        self.shot_pen.setStyle(QtCore.Qt.DashLine)
+        self.shot_pen.setColor(QtCore.Qt.blue)
+
+        # End of painter setup
 
         # Var definition
         self.key_list = []
@@ -61,6 +96,8 @@ class GameWindow(QtGui.QFrame):
     def draw_player(self, painter, player):
         """Draws the player"""
         rect = Qr(player.pos, player.size)
+        painter.setBrush(self.player_brush)
+        painter.setPen(self.player_pen)
 
         painter.drawRect(Qr(Qp(rect.topLeft().x() * self.x_stretch,
                                rect.topLeft().y() * self.y_stretch),
@@ -69,6 +106,9 @@ class GameWindow(QtGui.QFrame):
 
     def draw_obstacles(self, painter, obstacle_list):
         """Draws obstacles"""
+        painter.setBrush(self.obstacle_brush)
+        painter.setPen(self.obstacle_pen)
+
         for polygon in obstacle_list:
             point_list = []
             for point in polygon:
@@ -77,6 +117,7 @@ class GameWindow(QtGui.QFrame):
 
     def draw_shot(self, painter, player):
         """Draws shot of the player"""
+        painter.setPen(self.shot_pen)
 
         shot_line_list = self.game.get_shot(player)
         if not shot_line_list:
@@ -89,6 +130,7 @@ class GameWindow(QtGui.QFrame):
                                    line.p2().y() * self.y_stretch)))
 
     def draw_direction_indicator_line(self, painter, player):
+        painter.setPen(self.shot_pen)
 
         player_rectangle = Qr(self.game.get_player_pos(player), self.game.get_player_size(player))
         line = Qlf(Qpf(player_rectangle.center().x() * self.x_stretch,
@@ -174,8 +216,13 @@ class GameWindow(QtGui.QFrame):
 
         self.draw_player(painter, self.game.player_1)
         self.draw_shot(painter, self.game.player_1)
+
         self.draw_obstacles(painter, self.game.get_obstacle_list())
+
+        # Draw angle indicator
         self.draw_direction_indicator_line(painter, self.game.player_1)
+
+        self.drawFrame(painter)
 
         painter.end()
 

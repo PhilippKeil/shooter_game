@@ -123,12 +123,9 @@ class Shot():
                 if max_line.intersect(outline_list[a][b], intersection) == 1:
                     # Intersection of both lines in self.intersection
                     max_line = QtCore.QLineF(start_point, intersection)
-                    print('intersection')
                     # Compute the outgoing angle of the shot
                     # It is done here, because I need the obstacle outline to compute it
                     angle = max_line.angleTo(outline_list[a][b]) + outline_list[a][b].angle()
-                else:
-                    print('No intersection')
 
         # max_line is now as short as possible
 
