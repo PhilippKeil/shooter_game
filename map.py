@@ -1,21 +1,22 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
-# New object structure:
+# Object parameters:
+# type: String (either 'player' or 'obstacle' atm)
+# brush: QBrush (see texture)
+# brush_color: QColor
+# texture: String (location) (overrides brush setting. Best use only texture OR brush for one object)
+# pen: QPen
+# pen_color: QColor
 #
-# dict(type: either obstacle or player
-#      type: player
-#            position: QPoint()
-#            size: QSize()
-#      type: obstacle
-#            position: [QPoint(), QPoint()]
-#      all types:
-#            brush: QBrush()
-#            pen: QPen()
-#            color: QColor()
-#            texture: String of location
+# type 'player' exclusive:
+#   position: QPoint
+#   size: QSize
+#   move_speed: Integer
+#   turn_speed: Integer
 #
-# New file structure:
+# type 'obstacle' exclusives:
+#   position: [QPoint, QPoint, ...]
 
 
 class Map():
