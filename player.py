@@ -2,14 +2,15 @@ from PyQt4 import QtCore
 
 
 class Player():
-    def __init__(self, x, y, w, h):
-        self.pos = QtCore.QPoint(x, y)
-        self.size = QtCore.QSize(w, h)
+    def __init__(self, player_information):
+        self.pos = player_information['position']
+        self.size = player_information['size']
+        self.turn_speed = player_information['turn_speed']
+        self.move_speed = player_information['move_speed']
+
         self.shot = Shot()
-        self.turn_speed = 2
         self.angle = 0
         self.indi_line_length = 30
-        self.move_speed = 5
         self.next_move_direction = QtCore.QPoint(0, 0)
 
     def try_move(self, move_direction, step_size, viewable_map_area, obstacle_list):

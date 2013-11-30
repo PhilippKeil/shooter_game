@@ -7,7 +7,7 @@ class Game():
     
     def __init__(self):
         self.map = Map('debug')
-        self.player_1 = Player(1, 1, 10, 10)
+        self.player_1 = Player(self.map.get_player_information())
 
     def move_player(self, player, move_direction):
         """Tries to move the player. Returns True is it succeeded. False if player couldn't be moved"""
