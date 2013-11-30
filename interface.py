@@ -83,8 +83,14 @@ class GameWindow(QtGui.QFrame):
 
             if hasattr(polygon, 'brush'):
                 painter.setBrush(polygon.brush)
+
             if hasattr(polygon, 'pen'):
                 painter.setPen(polygon.pen)
+
+            if hasattr(polygon, 'texture'):
+                texture = QtGui.QPixmap()
+                texture.load(polygon.texture)
+                painter.brush().setTexture(texture)
 
             for point in polygon.polygon:
                 point_list.append(Qp(point.x() * self.x_stretch, point.y() * self.y_stretch))

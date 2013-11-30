@@ -13,7 +13,7 @@ from PyQt4 import QtCore
 #            brush: QBrush()
 #            pen: QPen()
 #            color: QColor()
-#            texture: QPixmap()
+#            texture: String of location
 #
 # New file structure:
 
@@ -72,7 +72,7 @@ class Map():
                                       QtCore.QPoint(200, 0)],
                          'color': QtCore.Qt.blue,
                          'brush': QtCore.Qt.TexturePattern,
-                         'texture': QtGui.QPixmap('wood_texture.bmp'),
+                         'texture': 'wood_texture.bmp',
                          'pen': QtCore.Qt.DotLine})
 
         self.add_object({'type': 'obstacle',
