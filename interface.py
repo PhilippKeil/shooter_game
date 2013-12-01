@@ -101,7 +101,7 @@ class GameWindow(QtGui.QFrame):
 
         if 'texture' in player.information:
                 texture = QtGui.QPixmap()
-                texture.load(os.curdir + player.information['texture'])
+                texture.load(os.path.dirname(__file__) + '/data/textures/' + player.information['texture'])
                 brush.setTexture(texture)
 
         painter.setBrush(brush)
@@ -144,7 +144,6 @@ class GameWindow(QtGui.QFrame):
             if 'texture' in polygon.information:
                 texture = QtGui.QPixmap()
                 texture.load(os.path.dirname(__file__) + '/data/textures/' + polygon.information['texture'])
-                print(os.path.dirname(__file__) + '/data/textures/' + polygon.information['texture'])
                 brush.setTexture(texture)
 
             painter.setBrush(brush)
