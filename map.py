@@ -68,24 +68,26 @@ class Map():
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
                          'move_speed': 5,
-                         'brush': QtCore.Qt.SolidPattern})
+                         'brush_color': QtCore.Qt.blue,
+                         'shot_pen': QtCore.Qt.DotLine,
+                         'shot_pen_color': QtCore.Qt.blue})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(100, 0),
                                       QtCore.QPoint(100, 100),
                                       QtCore.QPoint(200, 100),
                                       QtCore.QPoint(200, 0)],
-                         'color': QtCore.Qt.blue,
-                         'texture': 'wood_texture.bmp',
-                         'pen': QtCore.Qt.DotLine})
+                         'pen': QtCore.Qt.DotLine,
+                         'pen_color': QtCore.Qt.blue,
+                         'texture': 'wood_texture.bmp'})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(100, 200),
                                       QtCore.QPoint(100, 400),
                                       QtCore.QPoint(400, 400),
                                       QtCore.QPoint(200, 200)],
-                         'color': QtCore.Qt.red,
-                         'brush': QtCore.Qt.Dense5Pattern,
+                         'brush_color': QtCore.Qt.red,
+                         'brush': QtCore.Qt.Dense2Pattern,
                          'pen': QtCore.Qt.SolidLine})
 
     def change_view_size(self, width, height, frame_size):
@@ -116,30 +118,10 @@ class Obstacle():
             # Raise an error
             raise ValueError('No positions were given')
 
-        if 'brush' in d:
-            self.brush = d['brush']
-        else:
-            print('No brush parameter given')
-
-        if 'brush_color' in d:
-            self.brush_color = d['color']
-        else:
-            print('No brush_color parameter given')
-
-        if 'texture' in d:
-            self.texture = d['texture']
-        else:
-            print('No texture parameter given')
-
-        if 'pen' in d:
-            self.pen = d['pen']
-        else:
-            print('no pen parameter given')
-
-        if 'pen_color' in d:
-            self.pen_color = d['pen']
-        else:
-            print('no pen_color parameter given')
+        self.information = {}
+        for key in d:
+            if key != 'type' or key != 'position':
+                self.information[key] = d[key]
 
     def outlines(self):
         # Iterate through every index of polygon

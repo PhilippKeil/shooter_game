@@ -10,14 +10,16 @@ from PyQt4.QtCore import QSize as Qs
 
 from main import Game
 
-defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
+defaults = {'obstacle_brush': QtCore.Qt.CrossPattern,
             'obstacle_brush_color': QtCore.Qt.red,
             'obstacle_pen': QtCore.Qt.SolidLine,
             'obstacle_pen_color': QtCore.Qt.red,
-            'player_brush': QtCore.Qt.SolidPattern,
+            'player_brush': QtCore.Qt.Dense5Pattern,
             'player_brush_color': QtCore.Qt.red,
             'player_pen': QtCore.Qt.SolidLine,
-            'player_pen_color': QtCore.Qt.red}
+            'player_pen_color': QtCore.Qt.red,
+            'shot_pen': QtCore.Qt.DotLine,
+            'shot_pen_color': QtCore.Qt.red}
 
 
 class Window(QtGui.QWidget):
@@ -69,50 +71,103 @@ class GameWindow(QtGui.QFrame):
         self.game_cycle_timer = QtCore.QBasicTimer()
         self.game_cycle_timer.start(Game.gameCycleInterval, self)
 
-    def draw_player(self, painter, player):
+    def draw_player(self, painter, player, default_values):
         """Draws the player"""
         rect = Qr(player.pos, player.size)
 
-        if hasattr(player, 'brush'):
-            painter.setBrush(player.brush)
+        brush = QtGui.QBrush()
+        pen = QtGui.QPen()
+
+        if 'brush' in player.information:
+            brush.setStyle(player.information['brush'])
         else:
-            painter.setBrush(defaults['player_brush'])
-        if hasattr(player, 'pen'):
-            painter.setPen(player.pen)
+            brush.setStyle(default_values['player_brush'])
+
+        if 'brush_color' in player.information:
+            brush.setColor(player.information['brush_color'])
         else:
-            painter.setPen(defaults['player_pen'])
+            brush.setColor(default_values['brush_color'])
+
+        if 'pen' in player.information:
+            pen.setStyle(player.information['pen'])
+        else:
+            pen.setStyle(default_values['player_pen'])
+
+        if 'pen_color' in player.information:
+            pen.setColor(player.information['pen_color'])
+        else:
+            pen.setColor(default_values['player_pen_color'])
+
+        if 'texture' in player.information:
+                texture = QtGui.QPixmap()
+                texture.load(player.information['texture'])
+                brush.setTexture(texture)
+
+        painter.setBrush(brush)
+        painter.setPen(pen)
 
         painter.drawRect(Qr(Qp(rect.topLeft().x() * self.x_stretch,
                                rect.topLeft().y() * self.y_stretch),
                             Qp(rect.bottomRight().x() * self.x_stretch,
                                rect.bottomRight().y() * self.y_stretch)))
 
-    def draw_obstacles(self, painter, obstacle_list):
+    def draw_obstacles(self, painter, obstacle_list, default_values):
         """Draws obstacles"""
 
         for polygon in obstacle_list:
             point_list = []
 
-            if hasattr(polygon, 'brush'):
-                painter.setBrush(polygon.brush)
+            brush = QtGui.QBrush()
+            pen = QtGui.QPen()
 
-            if hasattr(polygon, 'pen'):
-                painter.setPen(polygon.pen)
+            if 'brush' in polygon.information:
+                brush.setStyle(polygon.information['brush'])
+            else:
+                brush.setStyle(default_values['obstacle_brush'])
 
-            if hasattr(polygon, 'texture'):
+            if 'brush_color' in polygon.information:
+                brush.setColor(polygon.information['brush_color'])
+            else:
+                brush.setColor(default_values['obstacle_brush_color'])
+
+            if 'pen' in polygon.information:
+                pen.setStyle(polygon.information['pen'])
+            else:
+                pen.setStyle(default_values['obstacle_pen'])
+
+            if 'pen_color' in polygon.information:
+                pen.setColor(polygon.information['pen_color'])
+            else:
+                pen.setColor(default_values['obstacle_pen_color'])
+
+            if 'texture' in polygon.information:
                 texture = QtGui.QPixmap()
-                texture.load(polygon.texture)
-                brush = QtGui.QBrush()
+                texture.load(polygon.information['texture'])
                 brush.setTexture(texture)
 
-                painter.setBrush(brush)
+            painter.setBrush(brush)
+            painter.setPen(pen)
 
             for point in polygon.polygon:
                 point_list.append(Qp(point.x() * self.x_stretch, point.y() * self.y_stretch))
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
-    def draw_shot(self, painter, player):
+    def draw_shot(self, painter, player, default_values):
         """Draws shot of the player"""
+
+        pen = QtGui.QPen()
+
+        if 'shot_pen' in player.information:
+            pen.setStyle(player.information['shot_pen'])
+        else:
+            pen.setStyle(default_values['shot_pen'])
+
+        if 'shot_pen_color' in player.information:
+            pen.setColor(player.information['shot_pen_color'])
+        else:
+            pen.setColor(default_values['shot_pen_color'])
+
+        painter.setPen(pen)
 
         shot_line_list = self.game.get_shot(player)
         if not shot_line_list:
@@ -124,7 +179,20 @@ class GameWindow(QtGui.QFrame):
                                 Qp(line.p2().x() * self.x_stretch,
                                    line.p2().y() * self.y_stretch)))
 
-    def draw_direction_indicator_line(self, painter, player):
+    def draw_direction_indicator_line(self, painter, player, default_values):
+        pen = QtGui.QPen()
+
+        if 'shot_pen' in player.information:
+            pen.setStyle(player.information['shot_pen'])
+        else:
+            pen.setStyle(default_values['shot_pen'])
+
+        if 'shot_pen_color' in player.information:
+            pen.setColor(player.information['shot_pen_color'])
+        else:
+            pen.setColor(default_values['shot_pen_color'])
+
+        painter.setPen(pen)
 
         player_rectangle = Qr(self.game.get_player_pos(player), self.game.get_player_size(player))
         line = Qlf(Qpf(player_rectangle.center().x() * self.x_stretch,
@@ -208,13 +276,13 @@ class GameWindow(QtGui.QFrame):
         # Basic painter setup
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
 
-        self.draw_player(painter, self.game.player_1)
-        self.draw_shot(painter, self.game.player_1)
+        self.draw_player(painter, self.game.player_1, defaults)
+        self.draw_shot(painter, self.game.player_1, defaults)
 
-        self.draw_obstacles(painter, self.game.get_obstacle_list())
+        self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
 
         # Draw angle indicator
-        self.draw_direction_indicator_line(painter, self.game.player_1)
+        self.draw_direction_indicator_line(painter, self.game.player_1, defaults)
 
         self.drawFrame(painter)
 

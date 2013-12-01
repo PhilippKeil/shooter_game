@@ -8,10 +8,10 @@ class Player():
         self.turn_speed = player_information['turn_speed']
         self.move_speed = player_information['move_speed']
 
-        if 'brush' in player_information:
-            self.brush = player_information['brush']
-        if 'pen' in player_information:
-            self.pen = player_information['pen']
+        self.information = {}
+        for key in player_information:
+            if key != 'position' or key != 'size' or key != 'turn_speed' or key != 'move_speed':
+                self.information[key] = player_information[key]
 
         self.shot = Shot()
         self.angle = 0
