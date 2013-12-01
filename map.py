@@ -63,6 +63,17 @@ class Map():
         self.size = QtCore.QSize(800, 600)
         self.view_size = QtCore.QSize(300, 300)
 
+        # Template:
+        """
+        self.add_object({'type': ,
+                         'position': ,
+                         'brush': ,
+                         'brush_color': ,
+                         'pen': ,
+                         'pen_color': ,
+                         'texture': })
+        """
+
         self.add_object({'type': 'player',
                          'position': QtCore.QPoint(50, 50),
                          'size': QtCore.QSize(10, 10),
