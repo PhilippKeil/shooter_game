@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4.QtCore import QPoint as Qp
@@ -100,7 +101,7 @@ class GameWindow(QtGui.QFrame):
 
         if 'texture' in player.information:
                 texture = QtGui.QPixmap()
-                texture.load(player.information['texture'])
+                texture.load(os.curdir + player.information['texture'])
                 brush.setTexture(texture)
 
         painter.setBrush(brush)

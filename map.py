@@ -111,7 +111,7 @@ class Map():
                                       QtCore.QPoint(150, 0)],
                          'pen': QtCore.Qt.SolidLine,
                          'pen_color': QtCore.Qt.black,
-                         'texture': 'cobble_texture.bmp'})
+                         'texture': 'm_cobble_texture.bmp'})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(150, 0),
