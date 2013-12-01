@@ -10,10 +10,10 @@ from PyQt4.QtCore import QSize as Qs
 
 from main import Game
 
-defaults = {'obstacle_brush': QtCore.Qt.CrossPattern,
-            'obstacle_brush_color': QtCore.Qt.red,
+defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
+            'obstacle_brush_color': QtCore.Qt.black,
             'obstacle_pen': QtCore.Qt.SolidLine,
-            'obstacle_pen_color': QtCore.Qt.red,
+            'obstacle_pen_color': QtCore.Qt.black,
             'player_brush': QtCore.Qt.Dense5Pattern,
             'player_brush_color': QtCore.Qt.red,
             'player_pen': QtCore.Qt.SolidLine,
