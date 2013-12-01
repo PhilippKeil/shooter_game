@@ -18,6 +18,27 @@ from PyQt4 import QtCore
 # type 'obstacle' exclusives:
 #   position: [QPoint, QPoint, ...]
 
+colors = {'Turquoise': QtGui.QColor().fromRgb(26, 188, 156),
+          'Emerald': QtGui.QColor().fromRgb(46, 204, 113),
+          'Peter River': QtGui.QColor().fromRgb(52, 152, 219),
+          'Amethyst': QtGui.QColor().fromRgb(155, 89, 182),
+          'Wet Asphalt': QtGui.QColor().fromRgb(52, 73, 94),
+          'Green Sea': QtGui.QColor().fromRgb(22, 160, 133),
+          'Nephritis': QtGui.QColor().fromRgb(39, 174, 96),
+          'Belize Hole': QtGui.QColor().fromRgb(41, 128, 185),
+          'Wisteria': QtGui.QColor().fromRgb(142, 68, 173),
+          'Midnight Blue': QtGui.QColor().fromRgb(44, 62, 80),
+          'Sun Flower': QtGui.QColor().fromRgb(241, 196, 15),
+          'Carrot': QtGui.QColor().fromRgb(230, 126, 34),
+          'Alizarin': QtGui.QColor().fromRgb(231, 76, 60),
+          'Clouds': QtGui.QColor().fromRgb(236, 240, 241),
+          'Concrete': QtGui.QColor().fromRgb(149, 165, 166),
+          'Orange': QtGui.QColor().fromRgb(243, 156, 18),
+          'Pumpkin': QtGui.QColor().fromRgb(211, 84, 0),
+          'Pomegranate': QtGui.QColor().fromRgb(192, 57, 43),
+          'Silver': QtGui.QColor().fromRgb(189, 195, 199),
+          'Asbestos': QtGui.QColor().fromRgb(127, 140, 141)}
+
 
 class Map():
     def __init__(self, load_type):
@@ -65,13 +86,13 @@ class Map():
 
         # Template:
         """
-        self.add_object({'type': ,
-                         'position': ,
-                         'brush': ,
-                         'brush_color': ,
-                         'pen': ,
-                         'pen_color': ,
-                         'texture': })
+        self.add_object({'type': '',
+                         'position': QtCore.QPoint(),
+                         'brush': QtCore.Qt.,
+                         'brush_color': QtCore.Qt.,
+                         'pen': QtCore.Qt.,
+                         'pen_color': QtCore.Qt.,
+                         'texture': ''})
         """
 
         self.add_object({'type': 'player',
@@ -79,17 +100,26 @@ class Map():
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
                          'move_speed': 5,
-                         'brush_color': QtCore.Qt.blue,
+                         'brush_color': colors['Turquoise'],
                          'shot_pen': QtCore.Qt.DotLine,
                          'shot_pen_color': QtCore.Qt.blue})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(100, 0),
                                       QtCore.QPoint(100, 100),
+                                      QtCore.QPoint(150, 100),
+                                      QtCore.QPoint(150, 0)],
+                         'pen': QtCore.Qt.SolidLine,
+                         'pen_color': QtCore.Qt.black,
+                         'texture': 'cobble_texture.bmp'})
+
+        self.add_object({'type': 'obstacle',
+                         'position': [QtCore.QPoint(150, 0),
+                                      QtCore.QPoint(150, 100),
                                       QtCore.QPoint(200, 100),
                                       QtCore.QPoint(200, 0)],
-                         'pen': QtCore.Qt.DotLine,
-                         'pen_color': QtCore.Qt.blue,
+                         'pen': QtCore.Qt.SolidLine,
+                         'pen_color': QtCore.Qt.black,
                          'texture': 'wood_texture.bmp'})
 
         self.add_object({'type': 'obstacle',
