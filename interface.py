@@ -338,22 +338,22 @@ class GameWindow(QtGui.QFrame):
         transform.translate(-translate.x(), -translate.y())
         painter.setTransform(transform)
 
-        with self.game.player_1 as player:
-            self.draw_map_borders(painter,
-                                  self.game.get_viewable_map_area_pos(),
-                                  self.game.get_viewable_map_area_size(),
-                                  self.game.get_map_size(),
-                                  defaults)
-            self.draw_player(painter, player, defaults)
-            self.draw_direction_indicator_line(painter,
-                                               player,
-                                               self.game.get_player_pos(player),
-                                               self.game.get_player_size(player),
-                                               self.game.get_player_angle(player),
-                                               self.game.get_player_direction_indicator_line_length(player),
-                                               defaults)
-            self.draw_shot(painter, player, defaults, self.game.get_shot(player))
-            self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
+        player = self.game.player_1
+        self.draw_map_borders(painter,
+                              self.game.get_viewable_map_area_pos(),
+                              self.game.get_viewable_map_area_size(),
+                              self.game.get_map_size(),
+                              defaults)
+        self.draw_player(painter, player, defaults)
+        self.draw_direction_indicator_line(painter,
+                                           player,
+                                           self.game.get_player_pos(player),
+                                           self.game.get_player_size(player),
+                                           self.game.get_player_angle(player),
+                                           self.game.get_player_direction_indicator_line_length(player),
+                                           defaults)
+        self.draw_shot(painter, player, defaults, self.game.get_shot(player))
+        self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
 
         painter.end()
 
