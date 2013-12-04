@@ -111,7 +111,7 @@ class Map():
                          'shot_pen_color': QtCore.Qt.red})
 
         self.add_object({'type': 'player',
-                         'position': QtCore.QPoint(10, 50),
+                         'position': QtCore.QPoint(10, 30),
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
                          'move_speed': 3,
@@ -121,6 +121,18 @@ class Map():
                          'pen_color': QtCore.Qt.black,
                          'shot_pen': QtCore.Qt.DotLine,
                          'shot_pen_color': QtCore.Qt.green})
+
+        self.add_object({'type': 'player',
+                         'position': QtCore.QPoint(10, 50),
+                         'size': QtCore.QSize(10, 10),
+                         'turn_speed': 2,
+                         'move_speed': 3,
+                         'brush': QtCore.Qt.SolidPattern,
+                         'pen': QtCore.Qt.SolidLine,
+                         'brush_color': QtCore.Qt.blue,
+                         'pen_color': QtCore.Qt.black,
+                         'shot_pen': QtCore.Qt.DotLine,
+                         'shot_pen_color': QtCore.Qt.blue})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(100, 50),

@@ -8,10 +8,14 @@ class Game():
     def __init__(self, list_of_key_setups):
         self.map = Map('debug')
         self.players = []
-
-        for player_id in range(len(self.map.player_information)):
-            # Create as many players in the game as there are objects of players in the map
-            self.players.append(Player(self.map.player_information[player_id], list_of_key_setups[player_id], player_id))
+        try:
+            for player_id in range(len(self.map.player_information)):
+                # Create as many players in the game as there are objects of players in the map
+                self.players.append(Player(self.map.player_information[player_id],
+                                           list_of_key_setups[player_id],
+                                           player_id))
+        except IndexError:
+            print('Not enough key_setups defined for so many players')
 
     def move_player(self, player, move_direction):
         """Tries to move the player. Returns True is it succeeded. False if player couldn't be moved"""
