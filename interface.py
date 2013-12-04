@@ -39,13 +39,6 @@ player_key_setup = [{'move_up': QtCore.Qt.Key_W,
                      'move_left': QtCore.Qt.Key_Left,
                      'move_right': QtCore.Qt.Key_Right,
                      'turn_left': QtCore.Qt.Key_N,
-                     'turn_right': QtCore.Qt.Key_M},
-
-                    {'move_up': QtCore.Qt.Key_Up,
-                     'move_down': QtCore.Qt.Key_Down,
-                     'move_left': QtCore.Qt.Key_Left,
-                     'move_right': QtCore.Qt.Key_Right,
-                     'turn_left': QtCore.Qt.Key_N,
                      'turn_right': QtCore.Qt.Key_M}]
 
 debug_key_setup = {'debug_zoom_out': QtCore.Qt.Key_O,
