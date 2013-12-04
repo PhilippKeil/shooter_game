@@ -1,13 +1,15 @@
 from player import Player
 from map import Map
+from PyQt4.QtCore import QSize, QPoint
 
 
 class Game():
     gameCycleInterval = 10  # Time in ms
     
-    def __init__(self, list_of_key_setups):
+    def __init__(self, list_of_key_setups, debug_key_setup):
         self.map = Map('debug')
         self.players = []
+        self.debug_key_setup = debug_key_setup
         try:
             for player_id in range(len(self.map.player_information)):
                 # Create as many players in the game as there are objects of players in the map
@@ -15,7 +17,7 @@ class Game():
                                            list_of_key_setups[player_id],
                                            player_id))
         except IndexError:
-            print('Not enough key_setups defined for so many players')
+            print('Not enough key setups defined for so many players')
 
     def move_player(self, player, move_direction):
         """Tries to move the player. Returns True is it succeeded. False if player couldn't be moved"""
@@ -32,32 +34,54 @@ class Game():
             return True
 
     def handle_key(self, key):
-        for player in self.players:
-            action = 'NONE'
+        action = (None, None)
 
+        # Check keys of the players
+        for player in self.players:
             # Go through every key in the players key_dict and find the action associated with the key
             for player_key in player.key_dict:
                 if player.key_dict[player_key] == key:
-                    action = player_key
+                    action = player, player_key
 
-            # Perform the action if there is any
-            if action == 'move_up':
-                self.move_player(player, 'up')
-            elif action == 'move_down':
-                self.move_player(player, 'down')
-            elif action == 'move_left':
-                self.move_player(player, 'left')
-            elif action == 'move_right':
-                self.move_player(player, 'right')
-            elif action == 'turn_left':
-                self.turn_player(player, 'left')
-            elif action == 'turn_right':
-                self.turn_player(player, 'right')
-            elif action == 'NONE':
-                print('No event triggered in player ' + str(player))
+        # Check if there are debugging actions for the key and override the player action is necessary
+        for debug_key in self.debug_key_setup:
+            if self.debug_key_setup[debug_key] == key:
+                # Assign a debug action
+                action = 'DEBUG', debug_key
+
+        # Perform a player action
+        if action[1] == 'move_up':
+            self.move_player(action[0], 'up')
+        elif action[1] == 'move_down':
+            self.move_player(action[0], 'down')
+        elif action[1] == 'move_left':
+            self.move_player(action[0], 'left')
+        elif action[1] == 'move_right':
+            self.move_player(action[0], 'right')
+        elif action[1] == 'turn_left':
+            self.turn_player(action[0], 'left')
+        elif action[1] == 'turn_right':
+            self.turn_player(action[0], 'right')
+        elif action[1] is None:
+            print('No player event triggered')
+
+        # Perform a debugging action
+        if action[0] == 'DEBUG':
+            print('DEBUG EVENT (' + action[1] + ')')
+            if action[1] == 'debug_zoom_in':
+                self.set_viewable_map_area_size(self.get_viewable_map_area_size() - QSize(1, 1))
+            elif action[1] == 'debug_zoom_out':
+                self.set_viewable_map_area_size(self.get_viewable_map_area_size() + QSize(1, 1))
+            elif action[1] == 'debug_area_move_up':
+                self.set_viewable_map_area_position(self.get_viewable_map_area_pos() - QPoint(0, 1))
+            elif action[1] == 'debug_area_move_down':
+                self.set_viewable_map_area_position(self.get_viewable_map_area_pos() + QPoint(0, 1))
+            elif action[1] == 'debug_area_move_left':
+                self.set_viewable_map_area_position(self.get_viewable_map_area_pos() - QPoint(1, 0))
+            elif action[1] == 'debug_area_move_right':
+                self.set_viewable_map_area_position(self.get_viewable_map_area_pos() + QPoint(1, 0))
             else:
-                print('Unknown event (' + action + ') in player ' + str(player))
-
+                print('No action defined for DEBUG_EVENT (' + action[1] + ')')
 
     @staticmethod
     def turn_player(player, direction):

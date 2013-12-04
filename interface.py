@@ -26,20 +26,34 @@ defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'border_pen': QtCore.Qt.SolidLine,
             'border_pen_color': QtCore.Qt.red}
 
-key_setup = [{'move_up': QtCore.Qt.Key_W,
-              'move_down': QtCore.Qt.Key_S,
-              'move_left': QtCore.Qt.Key_A,
-              'move_right': QtCore.Qt.Key_D,
-              'turn_left': QtCore.Qt.Key_Q,
-              'turn_right': QtCore.Qt.Key_E,
-              'shoot': QtCore.Qt.Key_Space},
+player_key_setup = [{'move_up': QtCore.Qt.Key_W,
+                     'move_down': QtCore.Qt.Key_S,
+                     'move_left': QtCore.Qt.Key_A,
+                     'move_right': QtCore.Qt.Key_D,
+                     'turn_left': QtCore.Qt.Key_Q,
+                     'turn_right': QtCore.Qt.Key_E,
+                     'shoot': QtCore.Qt.Key_Space},
 
-             {'move_up': QtCore.Qt.Key_Up,
-              'move_down': QtCore.Qt.Key_Down,
-              'move_left': QtCore.Qt.Key_Left,
-              'move_right': QtCore.Qt.Key_Right,
-              'turn_left': QtCore.Qt.Key_N,
-              'turn_right': QtCore.Qt.Key_M}]
+                    {'move_up': QtCore.Qt.Key_Up,
+                     'move_down': QtCore.Qt.Key_Down,
+                     'move_left': QtCore.Qt.Key_Left,
+                     'move_right': QtCore.Qt.Key_Right,
+                     'turn_left': QtCore.Qt.Key_N,
+                     'turn_right': QtCore.Qt.Key_M},
+
+                    {'move_up': QtCore.Qt.Key_Up,
+                     'move_down': QtCore.Qt.Key_Down,
+                     'move_left': QtCore.Qt.Key_Left,
+                     'move_right': QtCore.Qt.Key_Right,
+                     'turn_left': QtCore.Qt.Key_N,
+                     'turn_right': QtCore.Qt.Key_M}]
+
+debug_key_setup = {'debug_zoom_out': QtCore.Qt.Key_O,
+                   'debug_zoom_in': QtCore.Qt.Key_U,
+                   'debug_area_move_up': QtCore.Qt.Key_I,
+                   'debug_area_move_down': QtCore.Qt.Key_K,
+                   'debug_area_move_left': QtCore.Qt.Key_J,
+                   'debug_area_move_right': QtCore.Qt.Key_L}
 
 
 class Window(QtGui.QWidget):
@@ -81,7 +95,7 @@ class GameWindow(QtGui.QFrame):
         QtGui.QFrame.__init__(self, parent)
 
         # Create a game instance
-        self.game = Game(key_setup)
+        self.game = Game(player_key_setup, debug_key_setup)
 
         # Var definition
         self.key_list = []
