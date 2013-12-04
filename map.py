@@ -18,6 +18,8 @@ from PyQt4 import QtCore
 # type 'obstacle' exclusives:
 #   position: [QPoint, QPoint, ...]
 
+
+# from flatuicolors.com
 colors = {'Turquoise': QtGui.QColor().fromRgb(26, 188, 156),
           'Emerald': QtGui.QColor().fromRgb(46, 204, 113),
           'Peter River': QtGui.QColor().fromRgb(52, 152, 219),
@@ -99,179 +101,20 @@ class Map():
                          'position': QtCore.QPoint(50, 50),
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
-                         'move_speed': 5,
-                         'brush_color': colors['Turquoise'],
+                         'move_speed': 3,
+                         'brush': QtCore.Qt.SolidPattern,
+                         'pen': QtCore.Qt.SolidLine,
+                         'brush_color': colors['Wet Asphalt'],
+                         'pen_color': QtCore.Qt.black,
                          'shot_pen': QtCore.Qt.DotLine,
-                         'shot_pen_color': QtCore.Qt.blue})
+                         'shot_pen_color': QtCore.Qt.red})
 
         self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(100, 0),
-                                      QtCore.QPoint(100, 100),
-                                      QtCore.QPoint(150, 100),
-                                      QtCore.QPoint(150, 0)],
-                         'pen': QtCore.Qt.SolidLine,
-                         'pen_color': QtCore.Qt.black,
-                         'texture': 'sand.bmp'})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(150, 0),
-                                      QtCore.QPoint(150, 100),
+                         'position': [QtCore.QPoint(100, 50),
+                                      QtCore.QPoint(200, 50),
                                       QtCore.QPoint(200, 100),
-                                      QtCore.QPoint(200, 0)],
-                         'pen': QtCore.Qt.SolidLine,
-                         'pen_color': QtCore.Qt.black,
+                                      QtCore.QPoint(100, 100)],
                          'texture': 'cobblestone.bmp'})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(200, 0),
-                                      QtCore.QPoint(200, 100),
-                                      QtCore.QPoint(250, 100),
-                                      QtCore.QPoint(250, 0)],
-                         'pen': QtCore.Qt.SolidLine,
-                         'pen_color': QtCore.Qt.black,
-                         'texture': 'planks_birch.bmp'})
-
-        # COLOR TESTS
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(0, 200),
-                                      QtCore.QPoint(20, 200),
-                                      QtCore.QPoint(20, 220),
-                                      QtCore.QPoint(0, 220)],
-                         'brush_color': colors['Turquoise']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(20, 200),
-                                      QtCore.QPoint(40, 200),
-                                      QtCore.QPoint(40, 220),
-                                      QtCore.QPoint(20, 220)],
-                         'brush_color': colors['Emerald']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(40, 200),
-                                      QtCore.QPoint(60, 200),
-                                      QtCore.QPoint(60, 220),
-                                      QtCore.QPoint(40, 220)],
-                         'brush_color': colors['Peter River']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(60, 200),
-                                      QtCore.QPoint(80, 200),
-                                      QtCore.QPoint(80, 220),
-                                      QtCore.QPoint(60, 220)],
-                         'brush_color': colors['Amethyst']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(80, 200),
-                                      QtCore.QPoint(100, 200),
-                                      QtCore.QPoint(100, 220),
-                                      QtCore.QPoint(80, 220)],
-                         'brush_color': colors['Wet Asphalt']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(100, 200),
-                                      QtCore.QPoint(120, 200),
-                                      QtCore.QPoint(120, 220),
-                                      QtCore.QPoint(100, 220)],
-                         'brush_color': colors['Sun Flower']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(120, 200),
-                                      QtCore.QPoint(140, 200),
-                                      QtCore.QPoint(140, 220),
-                                      QtCore.QPoint(120, 220)],
-                         'brush_color': colors['Carrot']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(140, 200),
-                                      QtCore.QPoint(160, 200),
-                                      QtCore.QPoint(160, 220),
-                                      QtCore.QPoint(140, 220)],
-                         'brush_color': colors['Alizarin']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(160, 200),
-                                      QtCore.QPoint(180, 200),
-                                      QtCore.QPoint(180, 220),
-                                      QtCore.QPoint(160, 220)],
-                         'brush_color': colors['Clouds']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(180, 200),
-                                      QtCore.QPoint(200, 200),
-                                      QtCore.QPoint(200, 220),
-                                      QtCore.QPoint(180, 220)],
-                         'brush_color': colors['Concrete']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(0, 220),
-                                      QtCore.QPoint(20, 220),
-                                      QtCore.QPoint(20, 240),
-                                      QtCore.QPoint(0, 240)],
-                         'brush_color': colors['Green Sea']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(20, 220),
-                                      QtCore.QPoint(40, 220),
-                                      QtCore.QPoint(40, 240),
-                                      QtCore.QPoint(20, 240)],
-                         'brush_color': colors['Nephritis']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(40, 220),
-                                      QtCore.QPoint(60, 220),
-                                      QtCore.QPoint(60, 240),
-                                      QtCore.QPoint(40, 240)],
-                         'brush_color': colors['Belize Hole']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(60, 220),
-                                      QtCore.QPoint(80, 220),
-                                      QtCore.QPoint(80, 240),
-                                      QtCore.QPoint(60, 240)],
-                         'brush_color': colors['Wisteria']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(80, 220),
-                                      QtCore.QPoint(100, 220),
-                                      QtCore.QPoint(100, 240),
-                                      QtCore.QPoint(80, 240)],
-                         'brush_color': colors['Midnight Blue']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(100, 220),
-                                      QtCore.QPoint(120, 220),
-                                      QtCore.QPoint(120, 240),
-                                      QtCore.QPoint(100, 240)],
-                         'brush_color': colors['Orange']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(120, 220),
-                                      QtCore.QPoint(140, 220),
-                                      QtCore.QPoint(140, 240),
-                                      QtCore.QPoint(120, 240)],
-                         'brush_color': colors['Pumpkin']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(140, 220),
-                                      QtCore.QPoint(160, 220),
-                                      QtCore.QPoint(160, 240),
-                                      QtCore.QPoint(140, 240)],
-                         'brush_color': colors['Pomegranate']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(160, 220),
-                                      QtCore.QPoint(180, 220),
-                                      QtCore.QPoint(180, 240),
-                                      QtCore.QPoint(160, 240)],
-                         'brush_color': colors['Silver']})
-
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(180, 220),
-                                      QtCore.QPoint(200, 220),
-                                      QtCore.QPoint(200, 240),
-                                      QtCore.QPoint(180, 240)],
-                         'brush_color': colors['Asbestos']})
-
 
     def change_view_size(self, width, height, frame_size):
         if width <= frame_size.width():
