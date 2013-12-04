@@ -47,14 +47,12 @@ class Window(QtGui.QWidget):
         if self.fullscreen:
             self.setGeometry(QtGui.QDesktopWidget.availableGeometry(QtGui.QApplication.desktop()))
             self.game_window.setFixedSize(self.height(), self.height())
-            self.game_window.change_stretch()
             self.showFullScreen()
             print('starting in fullscreen')
         else:
             self.setGeometry(1, 1, 500, 500)
             self.move(center(self.frameGeometry(), QtGui.QDesktopWidget().frameGeometry()))
             self.game_window.setFixedSize(self.width(), self.height())
-            self.game_window.change_stretch()
             self.show()
 
 
@@ -107,10 +105,10 @@ class GameWindow(QtGui.QFrame):
         painter.setBrush(brush)
         painter.setPen(pen)
 
-        painter.drawRect(Qr(Qp(rect.topLeft().x() * self.x_stretch,
-                               rect.topLeft().y() * self.y_stretch),
-                            Qp(rect.bottomRight().x() * self.x_stretch,
-                               rect.bottomRight().y() * self.y_stretch)))
+        painter.drawRect(Qr(Qp(rect.topLeft().x(),
+                               rect.topLeft().y()),
+                            Qp(rect.bottomRight().x(),
+                               rect.bottomRight().y())))
 
     def draw_obstacles(self, painter, obstacle_list, default_values):
         """Draws obstacles"""
@@ -150,7 +148,7 @@ class GameWindow(QtGui.QFrame):
             painter.setPen(pen)
 
             for point in polygon.polygon:
-                point_list.append(Qp(point.x() * self.x_stretch, point.y() * self.y_stretch))
+                point_list.append(Qp(point.x(), point.y()))
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
     def draw_shot(self, painter, player, default_values):
@@ -175,10 +173,10 @@ class GameWindow(QtGui.QFrame):
             return
 
         for line in shot_line_list:
-            painter.drawLine(Ql(Qp(line.p1().x() * self.x_stretch,
-                                   line.p1().y() * self.y_stretch),
-                                Qp(line.p2().x() * self.x_stretch,
-                                   line.p2().y() * self.y_stretch)))
+            painter.drawLine(Ql(Qp(line.p1().x(),
+                                   line.p1().y()),
+                                Qp(line.p2().x(),
+                                   line.p2().y())))
 
     def draw_direction_indicator_line(self, painter, player, default_values):
         pen = QtGui.QPen()
@@ -196,8 +194,8 @@ class GameWindow(QtGui.QFrame):
         painter.setPen(pen)
 
         player_rectangle = Qr(self.game.get_player_pos(player), self.game.get_player_size(player))
-        line = Qlf(Qpf(player_rectangle.center().x() * self.x_stretch,
-                       player_rectangle.center().y() * self.y_stretch),
+        line = Qlf(Qpf(player_rectangle.center().x(),
+                       player_rectangle.center().y()),
                    Qpf(player_rectangle.center() + Qp(1, 0)))
 
         line.setLength(self.game.get_player_direction_indicator_line_length(player))
@@ -250,9 +248,7 @@ class GameWindow(QtGui.QFrame):
 
                 elif key == QtCore.Qt.Key_X:
                     # Zoom
-                    self.game.change_viewable_map_area(self.game.get_viewable_map_area() + Qs(1, 1),
-                                                       self.size())
-                    self.change_stretch()
+                    self.game.set_viewable_map_area_size(self.game.get_viewable_map_area_size() + Qs(1, 1))
 
             # The next move is the player position + next_move_dir
             # to amplify move Speed, the next_move_dir is multiplied with self.move_speed
@@ -264,15 +260,24 @@ class GameWindow(QtGui.QFrame):
             # Update the scene AFTER all logic work
             self.update()
 
-    def change_stretch(self):
-        self.x_stretch = self.width() / float(self.game.get_viewable_map_area().width())
-        self.y_stretch = self.height() / float(self.game.get_viewable_map_area().height())
-
     def paintEvent(self, event):
         """Reimplementation of the paint Event"""
         # Initialize painter
         painter = QtGui.QPainter()
         painter.begin(self)
+
+        self.drawFrame(painter)
+
+        scaling = ((self.width() / float(self.game.get_viewable_map_area_size().width()),
+                    self.width() / float(self.game.get_viewable_map_area_size().height())))
+
+        translate = self.game.get_viewable_map_area_pos()
+
+        transform = QtGui.QTransform()
+        transform.scale(scaling[0], scaling[1])
+        transform.translate(translate.x(), translate.y())
+
+        painter.setTransform(transform)
 
         # Basic painter setup
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -284,8 +289,6 @@ class GameWindow(QtGui.QFrame):
 
         # Draw angle indicator
         self.draw_direction_indicator_line(painter, self.game.player_1, defaults)
-
-        self.drawFrame(painter)
 
         painter.end()
 

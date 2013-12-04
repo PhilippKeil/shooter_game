@@ -52,9 +52,9 @@ class Map():
         # Save player information after map has been loaded
         self.player_information = None
 
-        # def load_from_test variable definition
         self.size = 0
         self.view_size = 0
+        self.view_position = QtCore.QPoint(0, 0)
 
         # Init the map and declare which map to use
         if load_type == 'debug':
@@ -83,8 +83,9 @@ class Map():
     def load_test(self):
 
         # This method loads up a test map
-        self.size = QtCore.QSize(800, 600)
+        self.size = QtCore.QSize(400, 600)
         self.view_size = QtCore.QSize(300, 300)
+        self.view_position = QtCore.QPoint(0, 0)
 
         # Template:
         """
@@ -116,11 +117,12 @@ class Map():
                                       QtCore.QPoint(100, 100)],
                          'texture': 'cobblestone.bmp'})
 
-    def change_view_size(self, width, height, frame_size):
-        if width <= frame_size.width():
-            self.view_size.setWidth(width)
-        if height <= frame_size.height():
-            self.view_size.setHeight(height)
+        self.add_object({'type': 'obstacle',
+                         'position': [QtCore.QPoint(390, 50),
+                                      QtCore.QPoint(500, 50),
+                                      QtCore.QPoint(500, 100),
+                                      QtCore.QPoint(390, 100)],
+                         'texture': 'cobblestone.bmp'})
 
     def get_player_information(self):
         return self.player_information

@@ -42,9 +42,20 @@ class Game():
 
         return result
 
-    def get_viewable_map_area(self):
-        """Returns viewable map area"""
+    def get_viewable_map_area_size(self):
+        """Returns size of viewable area on the map"""
         return self.map.view_size
+
+    def get_viewable_map_area_pos(self):
+        """Returns position of viewable area on the map"""
+        return self.map.view_position
+
+    def set_viewable_map_area_size(self, size):
+        if size.width() <= self.map.size.width() and size.height() <= self.map.size.height():
+            self.map.view_size = size
+
+    def set_viewable_map_area_position(self, position):
+        pass
 
     def get_obstacle_list(self):
         return self.map.obstacle_list
@@ -82,6 +93,3 @@ class Game():
 
     def try_shot(self, player, start_point, end_point):
         player.shot.try_shot(start_point, end_point, self.map.outlines_list)
-
-    def change_viewable_map_area(self, size, frame_size):
-        self.map.change_view_size(size.width(), size.height(), frame_size)
