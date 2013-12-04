@@ -117,10 +117,10 @@ class Map():
                          'move_speed': 3,
                          'brush': QtCore.Qt.SolidPattern,
                          'pen': QtCore.Qt.SolidLine,
-                         'brush_color': QtCore.Qt.green,
+                         'brush_color': QtCore.Qt.blue,
                          'pen_color': QtCore.Qt.black,
                          'shot_pen': QtCore.Qt.DotLine,
-                         'shot_pen_color': QtCore.Qt.green})
+                         'shot_pen_color': QtCore.Qt.blue})
 
         self.add_object({'type': 'player',
                          'position': QtCore.QPoint(10, 50),

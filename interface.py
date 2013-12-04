@@ -7,7 +7,6 @@ from PyQt4.QtCore import QPointF as Qpf
 from PyQt4.QtCore import QRect as Qr
 from PyQt4.QtCore import QLine as Ql
 from PyQt4.QtCore import QLineF as Qlf
-from PyQt4.QtCore import QSize as Qs
 
 from main import Game
 
@@ -38,8 +37,9 @@ player_key_setup = [{'move_up': QtCore.Qt.Key_W,
                      'move_down': QtCore.Qt.Key_Down,
                      'move_left': QtCore.Qt.Key_Left,
                      'move_right': QtCore.Qt.Key_Right,
-                     'turn_left': QtCore.Qt.Key_N,
-                     'turn_right': QtCore.Qt.Key_M}]
+                     'turn_left': QtCore.Qt.Key_B,
+                     'turn_right': QtCore.Qt.Key_M,
+                     'shoot': QtCore.Qt.Key_N}]
 
 debug_key_setup = {'debug_zoom_out': QtCore.Qt.Key_O,
                    'debug_zoom_in': QtCore.Qt.Key_U,

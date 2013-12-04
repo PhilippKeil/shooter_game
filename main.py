@@ -1,6 +1,6 @@
 from player import Player
 from map import Map
-from PyQt4.QtCore import QSize, QPoint
+from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF
 
 
 class Game():
@@ -62,6 +62,8 @@ class Game():
             self.turn_player(action[0], 'left')
         elif action[1] == 'turn_right':
             self.turn_player(action[0], 'right')
+        elif action[1] == 'shoot':
+            self.player_shoot(action[0])
         elif action[1] is None:
             print('No player event triggered')
 
@@ -82,6 +84,12 @@ class Game():
                 self.set_viewable_map_area_position(self.get_viewable_map_area_pos() + QPoint(1, 0))
             else:
                 print('No action defined for DEBUG_EVENT (' + action[1] + ')')
+
+    def player_shoot(self, player):
+        tmp_line = QLineF(QPointF(player.pos), QPointF(player.pos + QPoint(1, 0)))
+        tmp_line.setAngle(player.angle)
+        tmp_line.setLength(player.shot.max_length)
+        self.try_shot(player, QRect(player.pos, player.size).center(), tmp_line.p2())
 
     @staticmethod
     def turn_player(player, direction):
