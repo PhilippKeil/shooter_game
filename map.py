@@ -83,7 +83,7 @@ class Map():
     def load_test(self):
 
         # This method loads up a test map
-        self.size = QtCore.QSize(800, 800)
+        self.size = QtCore.QSize(520, 500)
         self.view_size = QtCore.QSize(300, 300)
         self.view_position = QtCore.QPoint(0, 0)
 

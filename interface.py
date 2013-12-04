@@ -203,6 +203,23 @@ class GameWindow(QtGui.QFrame):
 
         painter.drawLine(line)
 
+    def draw_map_borders(self, painter, view_position, view_size, map_size):
+        if view_position.x() < 0:
+            print('view leaves map in x (lower than 0)')
+            painter.drawRect(view_position.x(), 0, abs(view_position.x()), map_size.height())
+
+        if view_position.y() < 0:
+            print('view leaves map in y (lower than 0)')
+            painter.drawRect(0, view_position.y(), map_size.width(), abs(view_position.y()))
+
+        if view_position.x() + view_size.width() > map_size.width():
+            print('view leaves map in x (higher than map width)')
+            painter.drawRect(map_size.width(), 0, map_size.width() + view_position.x(), map_size.height())
+
+        if view_position.y() + view_size.height() > map_size.height():
+            print('view leaves map in y (higher than map height)')
+            painter.drawRect(0, map_size.height(), map_size.width(), view_position.y())
+
     def timerEvent(self, event):
         if event.timerId() == self.game_cycle_timer.timerId():
             # The game_cycle_timer fired the event
@@ -250,13 +267,21 @@ class GameWindow(QtGui.QFrame):
                     # Zoom
                     self.game.set_viewable_map_area_size(self.game.get_viewable_map_area_size() + Qs(1, 1))
 
-                elif key == QtCore.Qt.Key_Y:
+                elif key == QtCore.Qt.Key_F:
                     # Move viewable position on the map to the left
                     self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() - Qp(1, 0))
 
-                elif key == QtCore.Qt.Key_C:
+                elif key == QtCore.Qt.Key_H:
                     # Move viewable position on the map to the right
                     self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() + Qp(1, 0))
+
+                elif key == QtCore.Qt.Key_T:
+                    # Move viewable position on the map up
+                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() - Qp(0, 1))
+
+                elif key == QtCore.Qt.Key_G:
+                    # Move viewable position on the map down
+                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() + Qp(0, 1))
 
             # The next move is the player position + next_move_dir
             # to amplify move Speed, the next_move_dir is multiplied with self.move_speed
@@ -272,27 +297,25 @@ class GameWindow(QtGui.QFrame):
         """Reimplementation of the paint Event"""
         # Initialize painter
         painter = QtGui.QPainter()
-        painter.begin(self)
 
+        painter.begin(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
         self.drawFrame(painter)
 
         scaling = ((self.width() / float(self.game.get_viewable_map_area_size().width()),
                     self.width() / float(self.game.get_viewable_map_area_size().height())))
-
         translate = self.game.get_viewable_map_area_pos()
-
         transform = QtGui.QTransform()
         transform.scale(scaling[0], scaling[1])
         transform.translate(-translate.x(), -translate.y())
-
         painter.setTransform(transform)
 
-        # Basic painter setup
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-
+        self.draw_map_borders(painter,
+                              self.game.get_viewable_map_area_pos(),
+                              self.game.get_viewable_map_area_size(),
+                              self.game.get_map_size())
         self.draw_player(painter, self.game.player_1, defaults)
         self.draw_shot(painter, self.game.player_1, defaults)
-
         self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
 
         # Draw angle indicator

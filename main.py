@@ -50,6 +50,9 @@ class Game():
         """Returns position of viewable area on the map"""
         return self.map.view_position
 
+    def get_map_size(self):
+        return self.map.size
+
     def set_viewable_map_area_size(self, size):
         if size.width() <= self.map.size.width() and size.height() <= self.map.size.height():
             self.map.view_size = size
