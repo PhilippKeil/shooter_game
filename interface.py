@@ -250,6 +250,14 @@ class GameWindow(QtGui.QFrame):
                     # Zoom
                     self.game.set_viewable_map_area_size(self.game.get_viewable_map_area_size() + Qs(1, 1))
 
+                elif key == QtCore.Qt.Key_Y:
+                    # Move viewable position on the map to the left
+                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() - Qp(1, 0))
+
+                elif key == QtCore.Qt.Key_C:
+                    # Move viewable position on the map to the right
+                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() + Qp(1, 0))
+
             # The next move is the player position + next_move_dir
             # to amplify move Speed, the next_move_dir is multiplied with self.move_speed
             if next_move_dir.x() != 0 or next_move_dir.y() != 0:
@@ -275,7 +283,7 @@ class GameWindow(QtGui.QFrame):
 
         transform = QtGui.QTransform()
         transform.scale(scaling[0], scaling[1])
-        transform.translate(translate.x(), translate.y())
+        transform.translate(-translate.x(), -translate.y())
 
         painter.setTransform(transform)
 

@@ -13,7 +13,7 @@ class Game():
         """Tries to move the player. Returns True is it succeeded. False if player couldn't be moved"""
         new_player_pos = player.try_move(move_direction,
                                          self.player_1.move_speed,
-                                         self.map.view_size,
+                                         self.map.size,
                                          self.map.obstacle_list)
         if new_player_pos == player.pos:
             # Player wasn't moved
@@ -55,7 +55,7 @@ class Game():
             self.map.view_size = size
 
     def set_viewable_map_area_position(self, position):
-        pass
+        self.map.view_position = position
 
     def get_obstacle_list(self):
         return self.map.obstacle_list

@@ -83,7 +83,7 @@ class Map():
     def load_test(self):
 
         # This method loads up a test map
-        self.size = QtCore.QSize(400, 600)
+        self.size = QtCore.QSize(800, 800)
         self.view_size = QtCore.QSize(300, 300)
         self.view_position = QtCore.QPoint(0, 0)
 
@@ -99,7 +99,7 @@ class Map():
         """
 
         self.add_object({'type': 'player',
-                         'position': QtCore.QPoint(50, 50),
+                         'position': QtCore.QPoint(120, 100),
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
                          'move_speed': 3,

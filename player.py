@@ -18,7 +18,7 @@ class Player():
         self.indi_line_length = 30
         self.next_move_direction = QtCore.QPoint(0, 0)
 
-    def try_move(self, move_direction, step_size, viewable_map_area, obstacle_list):
+    def try_move(self, move_direction, step_size, map_size, obstacle_list):
         """Returns the best possible (farthest with given step_size) new position for the player.
         Returns the current position of the player, if no other solution is possible."""
         for a in range(step_size, 1, -1):
@@ -28,8 +28,8 @@ class Player():
 
             # Check if new positions are inside the viewable area of the map
             if new_rect.topLeft().x() >= 0 and new_rect.topLeft().y() >= 0 and \
-                    new_rect.bottomRight().x() <= viewable_map_area.width() and \
-                    new_rect.bottomRight().y() <= viewable_map_area.height():
+                    new_rect.bottomRight().x() <= map_size.width() and \
+                    new_rect.bottomRight().y() <= map_size.height():
                 # Positions are inside the window
                 # Check if player comes into contact with an obstacle
                 # Check if uL or bR of the player are contained by an obstacle
