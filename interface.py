@@ -74,7 +74,8 @@ class GameWindow(QtGui.QFrame):
         self.game_cycle_timer = QtCore.QBasicTimer()
         self.game_cycle_timer.start(Game.gameCycleInterval, self)
 
-    def draw_player(self, painter, player, default_values):
+    @staticmethod
+    def draw_player(painter, player, default_values):
         """Draws the player"""
         rect = Qr(player.pos, player.size)
 
@@ -114,7 +115,8 @@ class GameWindow(QtGui.QFrame):
                             Qp(rect.bottomRight().x(),
                                rect.bottomRight().y())))
 
-    def draw_obstacles(self, painter, obstacle_list, default_values):
+    @staticmethod
+    def draw_obstacles(painter, obstacle_list, default_values):
         """Draws obstacles"""
 
         for polygon in obstacle_list:
@@ -155,7 +157,8 @@ class GameWindow(QtGui.QFrame):
                 point_list.append(Qp(point.x(), point.y()))
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
-    def draw_shot(self, painter, player, default_values):
+    @staticmethod
+    def draw_shot(painter, player, default_values, shot_line_list):
         """Draws shot of the player"""
 
         pen = QtGui.QPen()
@@ -172,7 +175,6 @@ class GameWindow(QtGui.QFrame):
 
         painter.setPen(pen)
 
-        shot_line_list = self.game.get_shot(player)
         if not shot_line_list:
             return
 
@@ -182,7 +184,14 @@ class GameWindow(QtGui.QFrame):
                                 Qp(line.p2().x(),
                                    line.p2().y())))
 
-    def draw_direction_indicator_line(self, painter, player, default_values):
+    @staticmethod
+    def draw_direction_indicator_line(painter,
+                                      player,
+                                      player_pos,
+                                      player_size,
+                                      player_turn_angle,
+                                      player_direction_indicator_line_length,
+                                      default_values):
         pen = QtGui.QPen()
 
         if 'shot_pen' in player.information:
@@ -197,17 +206,18 @@ class GameWindow(QtGui.QFrame):
 
         painter.setPen(pen)
 
-        player_rectangle = Qr(self.game.get_player_pos(player), self.game.get_player_size(player))
+        player_rectangle = Qr(player_pos, player_size)
         line = Qlf(Qpf(player_rectangle.center().x(),
                        player_rectangle.center().y()),
                    Qpf(player_rectangle.center() + Qp(1, 0)))
 
-        line.setLength(self.game.get_player_direction_indicator_line_length(player))
-        line.setAngle(self.game.get_player_angle(player))
+        line.setLength(player_direction_indicator_line_length)
+        line.setAngle(player_turn_angle)
 
         painter.drawLine(line)
 
-    def draw_map_borders(self, painter, view_position, view_size, map_size, default_values):
+    @staticmethod
+    def draw_map_borders(painter, view_position, view_size, map_size, default_values):
         brush = QtGui.QBrush()
         brush.setStyle(default_values['border_brush'])
         brush.setColor(default_values['border_brush_color'])
@@ -309,13 +319,17 @@ class GameWindow(QtGui.QFrame):
 
     def paintEvent(self, event):
         """Reimplementation of the paint Event"""
-        # Initialize painter
         painter = QtGui.QPainter()
 
         painter.begin(self)
+
+        # Painter setup
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
+
+        # Draw a border around the game frame
         self.drawFrame(painter)
 
+        # Painter transformation setup
         scaling = ((self.width() / float(self.game.get_viewable_map_area_size().width()),
                     self.width() / float(self.game.get_viewable_map_area_size().height())))
         translate = self.game.get_viewable_map_area_pos()
@@ -324,17 +338,22 @@ class GameWindow(QtGui.QFrame):
         transform.translate(-translate.x(), -translate.y())
         painter.setTransform(transform)
 
-        self.draw_map_borders(painter,
-                              self.game.get_viewable_map_area_pos(),
-                              self.game.get_viewable_map_area_size(),
-                              self.game.get_map_size(),
-                              defaults)
-        self.draw_player(painter, self.game.player_1, defaults)
-        self.draw_shot(painter, self.game.player_1, defaults)
-        self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
-
-        # Draw angle indicator
-        self.draw_direction_indicator_line(painter, self.game.player_1, defaults)
+        with self.game.player_1 as player:
+            self.draw_map_borders(painter,
+                                  self.game.get_viewable_map_area_pos(),
+                                  self.game.get_viewable_map_area_size(),
+                                  self.game.get_map_size(),
+                                  defaults)
+            self.draw_player(painter, player, defaults)
+            self.draw_direction_indicator_line(painter,
+                                               player,
+                                               self.game.get_player_pos(player),
+                                               self.game.get_player_size(player),
+                                               self.game.get_player_angle(player),
+                                               self.game.get_player_direction_indicator_line_length(player),
+                                               defaults)
+            self.draw_shot(painter, player, defaults, self.game.get_shot(player))
+            self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
 
         painter.end()
 
