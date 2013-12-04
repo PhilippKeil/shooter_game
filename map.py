@@ -78,7 +78,7 @@ class Map():
                 self.obstacle_list.append(obstacle)
                 self.outlines_list.append(obstacle.outlines())
         else:
-            print('Could not create object. No type defined')
+            print('Could not create object. Type (' + d['type'] + ') is unknown')
 
     def load_test(self):
 
