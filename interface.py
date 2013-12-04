@@ -20,7 +20,11 @@ defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'player_pen': QtCore.Qt.SolidLine,
             'player_pen_color': QtCore.Qt.red,
             'shot_pen': QtCore.Qt.DotLine,
-            'shot_pen_color': QtCore.Qt.red}
+            'shot_pen_color': QtCore.Qt.red,
+            'border_brush': QtCore.Qt.CrossPattern,
+            'border_brush_color': QtCore.Qt.red,
+            'border_pen': QtCore.Qt.SolidLine,
+            'border_pen_color': QtCore.Qt.red}
 
 
 class Window(QtGui.QWidget):
@@ -203,7 +207,18 @@ class GameWindow(QtGui.QFrame):
 
         painter.drawLine(line)
 
-    def draw_map_borders(self, painter, view_position, view_size, map_size):
+    def draw_map_borders(self, painter, view_position, view_size, map_size, default_values):
+
+        brush = QtGui.QBrush()
+        brush.setStyle(default_values['border_brush'])
+        brush.setColor(default_values['border_brush_color'])
+        painter.setBrush(brush)
+
+        pen = QtGui.QPen()
+        pen.setStyle(default_values['border_pen'])
+        pen.setColor(default_values['border_pen_color'])
+        painter.setPen(pen)
+
         if view_position.x() < 0:
             print('view leaves map in x (lower than 0)')
             painter.drawRect(view_position.x(), 0, abs(view_position.x()), map_size.height())
@@ -313,7 +328,8 @@ class GameWindow(QtGui.QFrame):
         self.draw_map_borders(painter,
                               self.game.get_viewable_map_area_pos(),
                               self.game.get_viewable_map_area_size(),
-                              self.game.get_map_size())
+                              self.game.get_map_size(),
+                              defaults)
         self.draw_player(painter, self.game.player_1, defaults)
         self.draw_shot(painter, self.game.player_1, defaults)
         self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
