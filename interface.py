@@ -208,7 +208,6 @@ class GameWindow(QtGui.QFrame):
         painter.drawLine(line)
 
     def draw_map_borders(self, painter, view_position, view_size, map_size, default_values):
-
         brush = QtGui.QBrush()
         brush.setStyle(default_values['border_brush'])
         brush.setColor(default_values['border_brush_color'])

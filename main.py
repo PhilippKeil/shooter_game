@@ -95,4 +95,4 @@ class Game():
         return player.angle
 
     def try_shot(self, player, start_point, end_point):
-        player.shot.try_shot(start_point, end_point, self.map.outlines_list)
+        player.shot.try_shot(start_point, end_point, self.map.outlines_list, self.map.size)

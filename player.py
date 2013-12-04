@@ -91,11 +91,11 @@ class Shot():
         QtCore.QTimer.setSingleShot(self.timer, True)
         self.timer.stop()
 
-    def try_shot(self, s_point, e_point, outline_list):
+    def try_shot(self, s_point, e_point, outline_list, map_size):
         # Try to set new shot
         # This is only possible if the old shot has faded away
         if not self.timer.isActive():
-            self.current_shot = self.get_whole_shot(s_point, e_point, outline_list)
+            self.current_shot = self.get_whole_shot(s_point, e_point, outline_list, map_size)
             # The fade out timer is started
             self.timer.start()
 
@@ -144,7 +144,16 @@ class Shot():
 
         return max_line.p2(), angle, length
 
-    def get_whole_shot(self, start_point, ideal_end_point, outline_list):
+    def get_whole_shot(self, start_point, ideal_end_point, outline_list, map_size):
+        # Append the outlines of the map to outline_list so the shot gets reflected by the map borders too
+        outline_list.append([QtCore.QLineF(QtCore.QPoint(0, 0),
+                                           QtCore.QPoint(map_size.width(), 0)),
+                             QtCore.QLineF(QtCore.QPoint(map_size.width(), 0),
+                                           QtCore.QPoint(map_size.width(), map_size.height())),
+                             QtCore.QLineF(QtCore.QPoint(0, 0),
+                                           QtCore.QPoint(0, map_size.height())),
+                             QtCore.QLineF(QtCore.QPoint(0, map_size.height()),
+                                           QtCore.QPoint(map_size.width(), map_size.height()))])
 
         shot_start_pos = QtCore.QPointF(start_point)
         shot_end_pos = QtCore.QPointF(ideal_end_point)

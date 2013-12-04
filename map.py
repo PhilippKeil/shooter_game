@@ -164,6 +164,7 @@ class Obstacle():
         for a in range(1, len(self.polygon)):
             result.append(QtCore.QLineF(QtCore.QPointF(self.polygon[a-1]), QtCore.QPointF(self.polygon[a])))
             # append the last line from the last index to
-        result.append(QtCore.QLineF(QtCore.QPointF(self.polygon[len(self.polygon) - 1]), QtCore.QPointF(self.polygon[0])))
+        result.append(QtCore.QLineF(QtCore.QPointF(self.polygon[len(self.polygon) - 1]),
+                                    QtCore.QPointF(self.polygon[0])))
         return result
 
