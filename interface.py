@@ -26,6 +26,21 @@ defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'border_pen': QtCore.Qt.SolidLine,
             'border_pen_color': QtCore.Qt.red}
 
+key_setup = [{'move_up': QtCore.Qt.Key_W,
+              'move_down': QtCore.Qt.Key_S,
+              'move_left': QtCore.Qt.Key_A,
+              'move_right': QtCore.Qt.Key_D,
+              'turn_left': QtCore.Qt.Key_Q,
+              'turn_right': QtCore.Qt.Key_E,
+              'shoot': QtCore.Qt.Key_Space},
+
+             {'move_up': QtCore.Qt.Key_Up,
+              'move_down': QtCore.Qt.Key_Down,
+              'move_left': QtCore.Qt.Key_Left,
+              'move_right': QtCore.Qt.Key_Right,
+              'turn_left': QtCore.Qt.Key_N,
+              'turn_right': QtCore.Qt.Key_M}]
+
 
 class Window(QtGui.QWidget):
     def __init__(self):
@@ -66,7 +81,7 @@ class GameWindow(QtGui.QFrame):
         QtGui.QFrame.__init__(self, parent)
 
         # Create a game instance
-        self.game = Game()
+        self.game = Game(key_setup)
 
         # Var definition
         self.key_list = []
@@ -247,74 +262,10 @@ class GameWindow(QtGui.QFrame):
     def timerEvent(self, event):
         if event.timerId() == self.game_cycle_timer.timerId():
             # The game_cycle_timer fired the event
-
-            # Check for key presses and save next move in next_move_dir
-            # Reset next_move_dir
-            next_move_dir = Qp(0, 0)
-
             for a in range(len(self.key_list)):
                 key = self.key_list[a]
-                if key == QtCore.Qt.Key_Left:
-                    # the Left key is pressed
-                    next_move_dir.setX(next_move_dir.x() - 1)
+                self.game.handle_key(key)
 
-                elif key == QtCore.Qt.Key_Right:
-                    # the Right key is pressed
-                    next_move_dir.setX(next_move_dir.x() + 1)
-
-                elif key == QtCore.Qt.Key_Up:
-                    # the Up key is pressed
-                    next_move_dir.setY(next_move_dir.y() - 1)
-
-                elif key == QtCore.Qt.Key_Down:
-                    # the Down key is pressed
-                    next_move_dir.setY(next_move_dir.y() + 1)
-
-                elif key == QtCore.Qt.Key_Q:
-                    # Change player angle to turn left
-                    self.game.turn_player(self.game.player_1, 'left')
-                elif key == QtCore.Qt.Key_E:
-                    self.game.turn_player(self.game.player_1, 'right')
-
-                elif key == QtCore.Qt.Key_Space:
-                    # Shot
-                    tmp_line = Qlf(Qpf(self.game.get_player_pos(self.game.player_1)),
-                                   Qpf(self.game.get_player_pos(self.game.player_1) + Qp(1, 0)))
-
-                    tmp_line.setAngle(self.game.get_player_angle(self.game.player_1))
-                    tmp_line.setLength(self.game.get_shot_maximum_length(self.game.player_1))
-                    self.game.try_shot(self.game.player_1,
-                                       Qr(self.game.get_player_pos(self.game.player_1),
-                                          self.game.get_player_size(self.game.player_1)).center(), tmp_line.p2())
-
-                elif key == QtCore.Qt.Key_X:
-                    # Zoom
-                    self.game.set_viewable_map_area_size(self.game.get_viewable_map_area_size() + Qs(1, 1))
-
-                elif key == QtCore.Qt.Key_F:
-                    # Move viewable position on the map to the left
-                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() - Qp(1, 0))
-
-                elif key == QtCore.Qt.Key_H:
-                    # Move viewable position on the map to the right
-                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() + Qp(1, 0))
-
-                elif key == QtCore.Qt.Key_T:
-                    # Move viewable position on the map up
-                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() - Qp(0, 1))
-
-                elif key == QtCore.Qt.Key_G:
-                    # Move viewable position on the map down
-                    self.game.set_viewable_map_area_position(self.game.get_viewable_map_area_pos() + Qp(0, 1))
-
-            # The next move is the player position + next_move_dir
-            # to amplify move Speed, the next_move_dir is multiplied with self.move_speed
-            if next_move_dir.x() != 0 or next_move_dir.y() != 0:
-                self.game.move_player(self.game.player_1, next_move_dir)
-
-            # do all logic here in the future
-
-            # Update the scene AFTER all logic work
             self.update()
 
     def paintEvent(self, event):
@@ -338,22 +289,23 @@ class GameWindow(QtGui.QFrame):
         transform.translate(-translate.x(), -translate.y())
         painter.setTransform(transform)
 
-        player = self.game.player_1
         self.draw_map_borders(painter,
                               self.game.get_viewable_map_area_pos(),
                               self.game.get_viewable_map_area_size(),
                               self.game.get_map_size(),
                               defaults)
-        self.draw_player(painter, player, defaults)
-        self.draw_direction_indicator_line(painter,
-                                           player,
-                                           self.game.get_player_pos(player),
-                                           self.game.get_player_size(player),
-                                           self.game.get_player_angle(player),
-                                           self.game.get_player_direction_indicator_line_length(player),
-                                           defaults)
-        self.draw_shot(painter, player, defaults, self.game.get_shot(player))
         self.draw_obstacles(painter, self.game.get_obstacle_list(), defaults)
+
+        for player in self.game.players:
+            self.draw_player(painter, player, defaults)
+            self.draw_direction_indicator_line(painter,
+                                               player,
+                                               self.game.get_player_pos(player),
+                                               self.game.get_player_size(player),
+                                               self.game.get_player_angle(player),
+                                               self.game.get_player_direction_indicator_line_length(player),
+                                               defaults)
+            self.draw_shot(painter, player, defaults, self.game.get_shot(player))
 
         painter.end()
 

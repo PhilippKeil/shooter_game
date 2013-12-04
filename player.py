@@ -2,11 +2,14 @@ from PyQt4 import QtCore
 
 
 class Player():
-    def __init__(self, player_information):
+    def __init__(self, player_information, key_dict, player_id):
         self.pos = player_information['position']
         self.size = player_information['size']
         self.turn_speed = player_information['turn_speed']
         self.move_speed = player_information['move_speed']
+
+        self.key_dict = key_dict
+        self.player_id = player_id
 
         self.information = {}
         for key in player_information:
@@ -18,9 +21,24 @@ class Player():
         self.indi_line_length = 30
         self.next_move_direction = QtCore.QPoint(0, 0)
 
+    def __str__(self):
+        """Returns the ID of the player. Starting with 1 as the first player"""
+        return str(self.player_id + 1)
+
     def try_move(self, move_direction, step_size, map_size, obstacle_list):
         """Returns the best possible (farthest with given step_size) new position for the player.
         Returns the current position of the player, if no other solution is possible."""
+
+        # Translate the move direction into coordinates
+        if move_direction == 'up':
+            move_direction = QtCore.QPoint(0, -1)
+        elif move_direction == 'down':
+            move_direction = QtCore.QPoint(0, 1)
+        elif move_direction == 'left':
+            move_direction = QtCore.QPoint(-1, 0)
+        elif move_direction == 'right':
+            move_direction = QtCore.QPoint(1, 0)
+
         for a in range(step_size, 1, -1):
             new_rect = QtCore.QRect(QtCore.QPoint(self.pos.x() + move_direction.x() * a,
                                                   self.pos.y() + move_direction.y() * a),

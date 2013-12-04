@@ -50,10 +50,10 @@ class Map():
         self.outlines_list = []
 
         # Save player information after map has been loaded
-        self.player_information = None
+        self.player_information = []
 
-        self.size = 0
-        self.view_size = 0
+        self.size = None
+        self.view_size = None
         self.view_position = QtCore.QPoint(0, 0)
 
         # Init the map and declare which map to use
@@ -66,7 +66,7 @@ class Map():
     def add_object(self, d):
         if d['type'] == 'player':
             # Save the player object in the map class, until it is needed for creation of a player class
-            self.player_information = d
+            self.player_information.append(d)
         elif d['type'] == 'obstacle':
             # Create an obstacle
             try:
@@ -99,16 +99,28 @@ class Map():
         """
 
         self.add_object({'type': 'player',
-                         'position': QtCore.QPoint(120, 100),
+                         'position': QtCore.QPoint(10, 10),
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
                          'move_speed': 3,
                          'brush': QtCore.Qt.SolidPattern,
                          'pen': QtCore.Qt.SolidLine,
-                         'brush_color': colors['Wet Asphalt'],
+                         'brush_color': QtCore.Qt.red,
                          'pen_color': QtCore.Qt.black,
                          'shot_pen': QtCore.Qt.DotLine,
                          'shot_pen_color': QtCore.Qt.red})
+
+        self.add_object({'type': 'player',
+                         'position': QtCore.QPoint(10, 50),
+                         'size': QtCore.QSize(10, 10),
+                         'turn_speed': 2,
+                         'move_speed': 3,
+                         'brush': QtCore.Qt.SolidPattern,
+                         'pen': QtCore.Qt.SolidLine,
+                         'brush_color': QtCore.Qt.green,
+                         'pen_color': QtCore.Qt.black,
+                         'shot_pen': QtCore.Qt.DotLine,
+                         'shot_pen_color': QtCore.Qt.green})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(100, 50),
