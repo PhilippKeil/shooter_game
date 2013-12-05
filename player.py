@@ -193,4 +193,3 @@ class Shot():
             shot_start_pos = shot_end_pos
 
         return shot_line_list
-

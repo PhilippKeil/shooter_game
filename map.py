@@ -202,4 +202,3 @@ class Obstacle():
         result.append(QtCore.QLineF(QtCore.QPointF(self.polygon[len(self.polygon) - 1]),
                                     QtCore.QPointF(self.polygon[0])))
         return result
-
