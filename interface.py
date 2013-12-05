@@ -39,7 +39,15 @@ player_key_setup = [{'move_up': QtCore.Qt.Key_W,
                      'move_right': QtCore.Qt.Key_Right,
                      'turn_left': QtCore.Qt.Key_B,
                      'turn_right': QtCore.Qt.Key_M,
-                     'shoot': QtCore.Qt.Key_N}]
+                     'shoot': QtCore.Qt.Key_N},
+
+                    {'move_up': QtCore.Qt.Key_T,
+                     'move_down': QtCore.Qt.Key_G,
+                     'move_left': QtCore.Qt.Key_F,
+                     'move_right': QtCore.Qt.Key_H,
+                     'turn_left': QtCore.Qt.Key_R,
+                     'turn_right': QtCore.Qt.Key_Z,
+                     'shoot': QtCore.Qt.Key_V}]
 
 debug_key_setup = {'debug_zoom_out': QtCore.Qt.Key_O,
                    'debug_zoom_in': QtCore.Qt.Key_U,
@@ -68,7 +76,7 @@ class Window(QtGui.QWidget):
 
         self.setWindowTitle('Shooter')
 
-        self.fullscreen = False
+        self.fullscreen = True
 
         if self.fullscreen:
             self.setGeometry(QtGui.QDesktopWidget.availableGeometry(QtGui.QApplication.desktop()))
