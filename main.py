@@ -4,7 +4,8 @@ from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF
 
 
 class Game():
-    gameCycleInterval = 10  # Time in ms
+    # no effect???
+    gameCycleInterval = 1  # Time in ms
     
     def __init__(self, list_of_key_setups, debug_key_setup):
         self.map = Map('debug')
@@ -135,15 +136,26 @@ class Game():
         return self.map.background
 
     @staticmethod
+    def get_shot_intersection_with_player(player, shots):
+        intersection = QPointF()
+        for shot in shots:
+            for section in shot:
+                for i in range(4):
+                    if section.intersect(player.outlines_list[i], intersection):
+                        # intersection
+                        return True
+        return False
+
+    @staticmethod
     def get_shot(player):
         """Returns a list of lines which represent the shot the given player is currently firing.
            Returns an empty list if no shot is fired."""
-        if not player.shot.timer.isActive():
-            # Timer is not active. This means there is no shot fired.
+        shot = player.shot.get()
+        if not shot:
+            # No shot is fired
             return []
-
-        # Return the list of lines
-        return player.shot.current_shot
+        else:
+            return shot
 
     @staticmethod
     def get_shot_maximum_length(player):
@@ -166,4 +178,4 @@ class Game():
         return player.angle
 
     def try_shot(self, player, start_point, end_point):
-        player.shot.try_shot(start_point, end_point, self.map.outlines_list, self.map.size)
+        player.shot.set(start_point, end_point, self.map.outlines_list, self.map.size)

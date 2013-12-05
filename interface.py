@@ -215,13 +215,8 @@ class GameWindow(QtGui.QFrame):
                                    line.p2().y())))
 
     @staticmethod
-    def draw_direction_indicator_line(painter,
-                                      player,
-                                      player_pos,
-                                      player_size,
-                                      player_turn_angle,
-                                      player_direction_indicator_line_length,
-                                      default_values):
+    def draw_indicator_line(painter, player, player_pos, player_size, player_turn_angle, player_indicator_line_len,
+                            default_values):
         pen = QtGui.QPen()
 
         if 'shot_pen' in player.information:
@@ -241,7 +236,7 @@ class GameWindow(QtGui.QFrame):
                        player_rectangle.center().y()),
                    Qpf(player_rectangle.center() + Qp(1, 0)))
 
-        line.setLength(player_direction_indicator_line_length)
+        line.setLength(player_indicator_line_len)
         line.setAngle(player_turn_angle)
 
         painter.drawLine(line)
@@ -285,6 +280,8 @@ class GameWindow(QtGui.QFrame):
     def timerEvent(self, event):
         if event.timerId() == self.game_cycle_timer.timerId():
             # The game_cycle_timer fired the event
+
+            # Handle key presses
             for a in range(len(self.key_list)):
                 key = self.key_list[a]
                 self.game.handle_key(key)
@@ -322,19 +319,18 @@ class GameWindow(QtGui.QFrame):
 
         for player in self.game.players:
             self.draw_player(painter, player, defaults)
-            self.draw_direction_indicator_line(painter,
-                                               player,
-                                               self.game.get_player_pos(player),
-                                               self.game.get_player_size(player),
-                                               self.game.get_player_angle(player),
-                                               self.game.get_player_direction_indicator_line_length(player),
-                                               defaults)
+            self.draw_indicator_line(painter,
+                                     player,
+                                     self.game.get_player_pos(player),
+                                     self.game.get_player_size(player),
+                                     self.game.get_player_angle(player),
+                                     self.game.get_player_direction_indicator_line_length(player),
+                                     defaults)
             self.draw_shot(painter, player, defaults, self.game.get_shot(player))
 
         painter.end()
 
     def keyPressEvent(self, event):
-
         # Append the pressed key to key_list
         # It contains every currently pressed key
         key = event.key()

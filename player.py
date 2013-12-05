@@ -7,6 +7,7 @@ class Player():
         self.size = player_information['size']
         self.turn_speed = player_information['turn_speed']
         self.move_speed = player_information['move_speed']
+        self.outlines_list = self.outlines()
 
         self.key_dict = key_dict
         self.player_id = player_id
@@ -24,6 +25,13 @@ class Player():
     def __str__(self):
         """Returns the ID of the player. Starting with 1 as the first player"""
         return str(self.player_id + 1)
+
+    def outlines(self):
+        rect = QtCore.QRect(self.pos, self.size)
+        return [QtCore.QLineF(rect.topLeft(), rect.bottomLeft()),
+                QtCore.QLineF(rect.bottomLeft(), rect.bottomRight()),
+                QtCore.QLineF(rect.topLeft(), rect.topRight()),
+                QtCore.QLineF(rect.topRight(), rect.bottomRight())]
 
     def try_move(self, move_direction, step_size, map_size, obstacle_list):
         """Returns the best possible (farthest with given step_size) new position for the player.
@@ -95,29 +103,56 @@ class Player():
 
 class Shot():
     def __init__(self):
-
         self.start_pos = QtCore.QPoint(0, 0)
         self.end_pos = QtCore.QPoint(0, 0)
-        self.shot_up_time = 400  # ms how long the shot should be visible
+        self.shot_up_time = 1000  # ms how long the shot should be visible
         self.max_length = 1000
         self.current_shot = []
 
-        # init a timer
-        # A Timer to fade out the shot after a certain time is initiated
-        self.timer = QtCore.QTimer()
-        QtCore.QTimer.setInterval(self.timer, self.shot_up_time)
-        QtCore.QTimer.setSingleShot(self.timer, True)
-        self.timer.stop()
+        self.shot_timer = QtCore.QTimer()
+        self.shot_timer.setInterval(self.shot_up_time)
+        self.shot_timer.setSingleShot(True)
 
-    def try_shot(self, s_point, e_point, outline_list, map_size):
-        # Try to set new shot
-        # This is only possible if the old shot has faded away
-        if not self.timer.isActive():
-            self.current_shot = self.get_whole_shot(s_point, e_point, outline_list, map_size)
-            # The fade out timer is started
-            self.timer.start()
+    def set(self, start_point, end_point, outline_list, map_size):
+        if not self.shot_timer.isActive():
+            self.current_shot = self.compute_whole(start_point, end_point, outline_list, map_size)
+            self.shot_timer.start()
 
-    def compute_shot_section(self, start_point,  angle, length, outline_list):
+    def get(self):
+        if self.shot_timer.isActive():
+            return self.current_shot
+        else:
+            return False
+
+    def compute_whole(self, start_point, ideal_end_point, outline_list, map_size):
+        # Append the outlines of the map to outline_list so the shot gets reflected by the map borders too
+        outline_list.append([QtCore.QLineF(QtCore.QPoint(0, 0),
+                                           QtCore.QPoint(map_size.width(), 0)),
+                             QtCore.QLineF(QtCore.QPoint(map_size.width(), 0),
+                                           QtCore.QPoint(map_size.width(), map_size.height())),
+                             QtCore.QLineF(QtCore.QPoint(0, 0),
+                                           QtCore.QPoint(0, map_size.height())),
+                             QtCore.QLineF(QtCore.QPoint(0, map_size.height()),
+                                           QtCore.QPoint(map_size.width(), map_size.height()))])
+
+        shot_start_pos = QtCore.QPointF(start_point)
+        shot_end_pos = QtCore.QPointF(ideal_end_point)
+        length = self.max_length
+
+        angle = QtCore.QLineF(shot_start_pos, shot_end_pos).angle()
+        shot_line_list = []
+
+        while length > 0.0:
+            shot_end_pos, angle, length = self.compute_section(shot_start_pos, angle, length, outline_list)
+
+            shot_line_list.append(QtCore.QLineF(QtCore.QPointF(shot_start_pos), shot_end_pos))
+
+            shot_start_pos = shot_end_pos
+
+        return shot_line_list
+
+    @staticmethod
+    def compute_section(start_point,  angle, length, outline_list):
         # Returns the end point of the shot
         # whether its the actual end or just a collision with an obstacle can be seen in var Length
         # if remaining Length is 0 after calling the method, its the actual endpoint of the line
@@ -161,35 +196,3 @@ class Shot():
         max_line.setLength(max_line.length() - 1)
 
         return max_line.p2(), angle, length
-
-    def get_whole_shot(self, start_point, ideal_end_point, outline_list, map_size):
-        # Append the outlines of the map to outline_list so the shot gets reflected by the map borders too
-        outline_list.append([QtCore.QLineF(QtCore.QPoint(0, 0),
-                                           QtCore.QPoint(map_size.width(), 0)),
-                             QtCore.QLineF(QtCore.QPoint(map_size.width(), 0),
-                                           QtCore.QPoint(map_size.width(), map_size.height())),
-                             QtCore.QLineF(QtCore.QPoint(0, 0),
-                                           QtCore.QPoint(0, map_size.height())),
-                             QtCore.QLineF(QtCore.QPoint(0, map_size.height()),
-                                           QtCore.QPoint(map_size.width(), map_size.height()))])
-
-        shot_start_pos = QtCore.QPointF(start_point)
-        shot_end_pos = QtCore.QPointF(ideal_end_point)
-        length = self.max_length
-
-        angle = QtCore.QLineF(shot_start_pos, shot_end_pos).angle()
-        shot_line_list = []
-
-        # Iterate through the loop until the remaining length = 0
-        # It then executes the else statement
-        while length > 0.0:
-            shot_end_pos, angle, length = self.compute_shot_section(shot_start_pos,
-                                                                    angle,
-                                                                    length,
-                                                                    outline_list)
-
-            shot_line_list.append(QtCore.QLineF(QtCore.QPointF(shot_start_pos), shot_end_pos))
-
-            shot_start_pos = shot_end_pos
-
-        return shot_line_list
