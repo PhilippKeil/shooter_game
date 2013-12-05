@@ -266,6 +266,14 @@ class GameWindow(QtGui.QFrame):
             print('view leaves map in y (higher than map height)')
             painter.drawRect(0, map_size.height(), map_size.width(), view_position.y())
 
+    @staticmethod
+    def draw_background(painter, background, map_size):
+        brush = QtGui.QBrush()
+        brush.setTexture(background)
+
+        painter.setBrush(brush)
+        painter.drawRect(Qr(Qp(0, 0), map_size))
+
     def timerEvent(self, event):
         if event.timerId() == self.game_cycle_timer.timerId():
             # The game_cycle_timer fired the event
@@ -296,6 +304,7 @@ class GameWindow(QtGui.QFrame):
         transform.translate(-translate.x(), -translate.y())
         painter.setTransform(transform)
 
+        self.draw_background(painter, self.game.get_map_background(), self.game.get_map_size())
         self.draw_map_borders(painter,
                               self.game.get_viewable_map_area_pos(),
                               self.game.get_viewable_map_area_size(),

@@ -131,6 +131,9 @@ class Game():
     def get_obstacle_list(self):
         return self.map.obstacle_list
 
+    def get_map_background(self):
+        return self.map.background
+
     @staticmethod
     def get_shot(player):
         """Returns a list of lines which represent the shot the given player is currently firing.
