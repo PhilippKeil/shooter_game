@@ -1,5 +1,6 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
+import os
 
 # Object parameters:
 # type: String (either 'player' or 'obstacle' atm)
@@ -54,6 +55,7 @@ class Map():
 
         self.size = None
         self.view_size = None
+        self.background = None
         self.view_position = QtCore.QPoint(0, 0)
 
         # Init the map and declare which map to use
@@ -77,6 +79,23 @@ class Map():
                 # Add the obstacle to the lists obstacle_list and outlines_list
                 self.obstacle_list.append(obstacle)
                 self.outlines_list.append(obstacle.outlines())
+        elif d['type'] == 'background':
+            if 'shadow' in d:
+                shadow = d['shadow']
+            else:
+                shadow = 1
+
+            image = QtGui.QImage()
+            image.load(os.path.dirname(__file__) + '/data/textures/' + d['texture'])
+            for y in range(image.height()):
+                for x in range(image.width()):
+                    pixel = image.pixel(x, y)
+                    r = QtGui.qRed(pixel) / shadow
+                    g = QtGui.qGreen(pixel) / shadow
+                    b = QtGui.qBlue(pixel) / shadow
+                    image.setPixel(x, y, QtGui.qRgba(r, g, b, 255))
+            self.background = QtGui.QPixmap()
+            self.background.convertFromImage(image, QtCore.Qt.DiffuseAlphaDither)
         else:
             print('Could not create object. Type (' + d['type'] + ') is unknown')
 
@@ -107,7 +126,7 @@ class Map():
                          'pen': QtCore.Qt.SolidLine,
                          'brush_color': QtCore.Qt.red,
                          'pen_color': QtCore.Qt.black,
-                         'shot_pen': QtCore.Qt.DotLine,
+                         'shot_pen': QtCore.Qt.SolidLine,
                          'shot_pen_color': QtCore.Qt.red})
 
         self.add_object({'type': 'player',
@@ -119,27 +138,43 @@ class Map():
                          'pen': QtCore.Qt.SolidLine,
                          'brush_color': QtCore.Qt.blue,
                          'pen_color': QtCore.Qt.black,
-                         'shot_pen': QtCore.Qt.DotLine,
+                         'shot_pen': QtCore.Qt.SolidLine,
                          'shot_pen_color': QtCore.Qt.blue})
 
-        self.add_object({'type': 'player',
-                         'position': QtCore.QPoint(10, 50),
-                         'size': QtCore.QSize(10, 10),
-                         'turn_speed': 2,
-                         'move_speed': 3,
-                         'brush': QtCore.Qt.SolidPattern,
-                         'pen': QtCore.Qt.SolidLine,
-                         'brush_color': QtCore.Qt.blue,
-                         'pen_color': QtCore.Qt.black,
-                         'shot_pen': QtCore.Qt.DotLine,
-                         'shot_pen_color': QtCore.Qt.blue})
+        self.add_object({'type': 'background',
+                         'texture': 'stonebrick.bmp',
+                         'shadow': 3})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(100, 50),
                                       QtCore.QPoint(200, 50),
                                       QtCore.QPoint(200, 100),
                                       QtCore.QPoint(100, 100)],
-                         'texture': 'cobblestone.bmp'})
+                         'texture': 'planks_jungle.bmp'})
+
+        self.add_object({'type': 'obstacle',
+                         'position': [QtCore.QPoint(0, 200),
+                                      QtCore.QPoint(200, 200),
+                                      QtCore.QPoint(200, 240),
+                                      QtCore.QPoint(180, 220),
+                                      QtCore.QPoint(20, 220),
+                                      QtCore.QPoint(0, 240)],
+                         'texture': 'planks_jungle.bmp'})
+
+        self.add_object({'type': 'obstacle',
+                         'position': [QtCore.QPoint(200, 200),
+                                      QtCore.QPoint(220, 200),
+                                      QtCore.QPoint(220, 400),
+                                      QtCore.QPoint(200, 400)],
+                         'texture': 'planks_jungle.bmp'})
+
+        self.add_object({'type': 'obstacle',
+                         'position': [QtCore.QPoint(0, 400),
+                                      QtCore.QPoint(20, 420),
+                                      QtCore.QPoint(220, 420),
+                                      QtCore.QPoint(220, 440),
+                                      QtCore.QPoint(0, 440)],
+                         'texture': 'planks_jungle.bmp'})
 
         self.add_object({'type': 'obstacle',
                          'position': [QtCore.QPoint(390, 50),
@@ -191,4 +226,3 @@ class Obstacle():
         result.append(QtCore.QLineF(QtCore.QPointF(self.polygon[len(self.polygon) - 1]),
                                     QtCore.QPointF(self.polygon[0])))
         return result
-
