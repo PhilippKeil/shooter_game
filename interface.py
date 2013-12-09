@@ -56,7 +56,7 @@ class Window(QtGui.QWidget):
         # Initialize the window
         super(Window, self).__init__()
 
-        self.fullscreen = True
+        self.fullscreen = False
         self.graphics = 'low'
 
         # Create a canvas for the game to run inside
@@ -105,11 +105,26 @@ class GameWindow(QtGui.QFrame):
             # The game_cycle_timer fired the event
 
             # Handle key presses
-            for a in range(len(self.key_list)):
-                key = self.key_list[a]
+            for key in self.key_list:
                 self.game.handle_key(key)
 
             # Handle collision of player with a shot
+            shot_list = []
+            for player in self.game.players:
+                # Generate a list of all shots currently fired
+                shot_list.append(self.game.get_shot(player))
+
+            # DEBUGGING PURPOSES
+            shot_list = [[], [QtCore.QLineF(QtCore.QLine(0, 0, 100, 0))]]
+
+            for player in self.game.players:
+                # Remove shot of current player from list of shots
+                customized_shot_list = shot_list
+                customized_shot_list[player.player_id] = []
+
+                # Check for collisions of player with all remaining shots in the list of shots
+                if self.game.get_shot_intersection_with_player(player, customized_shot_list):
+                    self.game_cycle_timer.stop()
 
             self.update()
 

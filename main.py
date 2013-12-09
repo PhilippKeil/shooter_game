@@ -173,10 +173,14 @@ class Game():
         for shot in shots:
             for section in shot:
                 for i in range(4):
-                    if section.intersect(player.outlines_list[i], intersection):
-                        # intersection
-                        return True
-        return False
+                    outlines = player.outlines_list
+                    section.intersect(outlines[i], intersection)
+
+        if intersection != QPointF():
+            print('intersection')
+            return True
+        else:
+            return False
 
     @staticmethod
     def get_shot(player):
