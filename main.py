@@ -121,25 +121,6 @@ class Game():
         tmp_line.setLength(player.shot.max_length)
         self.try_shot(player, QRect(player.pos, player.size).center(), tmp_line.p2())
 
-    @staticmethod
-    def turn_player(player, direction):
-        """Turns the player in direction. Returns False if direction was not specified correctly."""
-        result = False
-
-        if direction == 'left':
-            player.angle += player.turn_speed
-            result = True
-        elif direction == 'right':
-            player.angle -= player.turn_speed
-            result = True
-
-        if player.angle >= 360:
-            player.angle -= 360
-        elif player.angle < 0:
-            player.angle += 360
-
-        return result
-
     def get_viewable_map_area_size(self):
         """Returns size of viewable area on the map"""
         return self.map.view_size
@@ -163,6 +144,28 @@ class Game():
 
     def get_map_background(self):
         return self.map.background
+
+    def try_shot(self, player, start_point, end_point):
+        player.shot.set(start_point, end_point, self.map.outlines_list, self.map.size)
+
+    @staticmethod
+    def turn_player(player, direction):
+        """Turns the player in direction. Returns False if direction was not specified correctly."""
+        result = False
+
+        if direction == 'left':
+            player.angle += player.turn_speed
+            result = True
+        elif direction == 'right':
+            player.angle -= player.turn_speed
+            result = True
+
+        if player.angle >= 360:
+            player.angle -= 360
+        elif player.angle < 0:
+            player.angle += 360
+
+        return result
 
     @staticmethod
     def get_shot_intersection_with_player(player, shots):
@@ -205,6 +208,3 @@ class Game():
     @staticmethod
     def get_player_angle(player):
         return player.angle
-
-    def try_shot(self, player, start_point, end_point):
-        player.shot.set(start_point, end_point, self.map.outlines_list, self.map.size)

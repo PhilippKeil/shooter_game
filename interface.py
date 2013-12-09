@@ -109,6 +109,8 @@ class GameWindow(QtGui.QFrame):
                 key = self.key_list[a]
                 self.game.handle_key(key)
 
+            # Handle collision of player with a shot
+
             self.update()
 
     def paintEvent(self, event):
