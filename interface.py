@@ -62,8 +62,11 @@ class Window(QtGui.QWidget):
         # Initialize the window
         super(Window, self).__init__()
 
+        self.fullscreen = True
+        self.graphics = 'low'
+
         # Create a canvas for the game to run inside
-        self.game_window = GameWindow(self)
+        self.game_window = GameWindow(self, self.graphics)
         self.game_window.setFrameStyle(QtGui.QFrame.Box)
         self.game_window.setFocusPolicy(QtCore.Qt.StrongFocus)
 
@@ -76,7 +79,6 @@ class Window(QtGui.QWidget):
 
         self.setWindowTitle('Shooter')
 
-        self.fullscreen = True
 
         if self.fullscreen:
             self.setGeometry(QtGui.QDesktopWidget.availableGeometry(QtGui.QApplication.desktop()))
@@ -91,7 +93,7 @@ class Window(QtGui.QWidget):
 
 
 class GameWindow(QtGui.QFrame):
-    def __init__(self, parent):
+    def __init__(self, parent, graphics):
         # Initialize the UI element
         QtGui.QFrame.__init__(self, parent)
 
@@ -100,6 +102,7 @@ class GameWindow(QtGui.QFrame):
 
         # Var definition
         self.key_list = []
+        self.graphics = graphics
 
         self.game_cycle_timer = QtCore.QBasicTimer()
         self.game_cycle_timer.start(Game.gameCycleInterval, self)
@@ -309,7 +312,9 @@ class GameWindow(QtGui.QFrame):
         transform.translate(-translate.x(), -translate.y())
         painter.setTransform(transform)
 
-        self.draw_background(painter, self.game.get_map_background(), self.game.get_map_size())
+        if self.graphics == 'high':
+            self.draw_background(painter, self.game.get_map_background(), self.game.get_map_size())
+
         self.draw_map_borders(painter,
                               self.game.get_viewable_map_area_pos(),
                               self.game.get_viewable_map_area_size(),

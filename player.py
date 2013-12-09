@@ -28,10 +28,10 @@ class Player():
 
     def outlines(self):
         rect = QtCore.QRect(self.pos, self.size)
-        return [QtCore.QLineF(rect.topLeft(), rect.bottomLeft()),
-                QtCore.QLineF(rect.bottomLeft(), rect.bottomRight()),
-                QtCore.QLineF(rect.topLeft(), rect.topRight()),
-                QtCore.QLineF(rect.topRight(), rect.bottomRight())]
+        return [QtCore.QLineF(QtCore.QPointF(rect.topLeft()), QtCore.QPointF(rect.bottomLeft())),
+                QtCore.QLineF(QtCore.QPointF(rect.bottomLeft()), QtCore.QPointF(rect.bottomRight())),
+                QtCore.QLineF(QtCore.QPointF(rect.topLeft()), QtCore.QPointF(rect.topRight())),
+                QtCore.QLineF(QtCore.QPointF(rect.topRight()), QtCore.QPointF(rect.bottomRight()))]
 
     def try_move(self, move_direction, step_size, map_size, obstacle_list):
         """Returns the best possible (farthest with given step_size) new position for the player.
@@ -126,14 +126,14 @@ class Shot():
 
     def compute_whole(self, start_point, ideal_end_point, outline_list, map_size):
         # Append the outlines of the map to outline_list so the shot gets reflected by the map borders too
-        outline_list.append([QtCore.QLineF(QtCore.QPoint(0, 0),
-                                           QtCore.QPoint(map_size.width(), 0)),
-                             QtCore.QLineF(QtCore.QPoint(map_size.width(), 0),
-                                           QtCore.QPoint(map_size.width(), map_size.height())),
-                             QtCore.QLineF(QtCore.QPoint(0, 0),
-                                           QtCore.QPoint(0, map_size.height())),
-                             QtCore.QLineF(QtCore.QPoint(0, map_size.height()),
-                                           QtCore.QPoint(map_size.width(), map_size.height()))])
+        outline_list.append([QtCore.QLineF(QtCore.QPointF(0, 0),
+                                           QtCore.QPointF(map_size.width(), 0)),
+                             QtCore.QLineF(QtCore.QPointF(map_size.width(), 0),
+                                           QtCore.QPointF(map_size.width(), map_size.height())),
+                             QtCore.QLineF(QtCore.QPointF(0, 0),
+                                           QtCore.QPointF(0, map_size.height())),
+                             QtCore.QLineF(QtCore.QPointF(0, map_size.height()),
+                                           QtCore.QPointF(map_size.width(), map_size.height()))])
 
         shot_start_pos = QtCore.QPointF(start_point)
         shot_end_pos = QtCore.QPointF(ideal_end_point)

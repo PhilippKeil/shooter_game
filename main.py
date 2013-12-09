@@ -5,7 +5,7 @@ from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF
 
 class Game():
     # no effect???
-    gameCycleInterval = 1  # Time in ms
+    gameCycleInterval = 10  # Time in ms
     
     def __init__(self, list_of_key_setups, debug_key_setup):
         self.map = Map('debug')
