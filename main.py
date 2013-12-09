@@ -1,5 +1,7 @@
 from player import Player
 from map import Map
+from game_painter import Paint
+
 from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF
 
 
@@ -85,6 +87,33 @@ class Game():
                 self.set_viewable_map_area_position(self.get_viewable_map_area_pos() + QPoint(1, 0))
             else:
                 print('No action defined for DEBUG_EVENT (' + action[1] + ')')
+
+    def draw_game(self, painter, graphic_setting, defaults):
+        # Draw the map background
+        if graphic_setting == 'high':
+            Paint.draw_background(painter, self.get_map_background(), self.get_map_size())
+
+        # Draw the map limits
+        Paint.draw_map_borders(painter,
+                               self.get_viewable_map_area_pos(),
+                               self.get_viewable_map_area_size(),
+                               self.get_map_size(),
+                               defaults)
+
+        # Draw obstacles
+        Paint.draw_obstacles(painter, self.get_obstacle_list(), defaults)
+
+        # Draw the model, indicator line and shot of every player
+        for player in self.players:
+            Paint.draw_player(painter, player, defaults)
+            Paint.draw_indicator_line(painter,
+                                      player,
+                                      self.get_player_pos(player),
+                                      self.get_player_size(player),
+                                      self.get_player_angle(player),
+                                      self.get_player_direction_indicator_line_length(player),
+                                      defaults)
+            Paint.draw_shot(painter, player, defaults, self.get_shot(player))
 
     def player_shoot(self, player):
         tmp_line = QLineF(QPointF(player.pos), QPointF(player.pos + QPoint(1, 0)))
