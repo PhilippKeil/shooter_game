@@ -7,7 +7,6 @@ class Player():
         self.size = player_information['size']
         self.turn_speed = player_information['turn_speed']
         self.move_speed = player_information['move_speed']
-        self.outlines_list = self.outlines()
 
         self.key_dict = key_dict
         self.player_id = player_id
@@ -24,7 +23,7 @@ class Player():
 
     def __str__(self):
         """Returns the ID of the player. Starting with 1 as the first player"""
-        return str(self.player_id + 1)
+        return 'Player ' + str(self.player_id + 1)
 
     def outlines(self):
         rect = QtCore.QRect(self.pos, self.size)

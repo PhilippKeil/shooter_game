@@ -1,4 +1,5 @@
 import sys
+import copy
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
@@ -109,22 +110,15 @@ class GameWindow(QtGui.QFrame):
                 self.game.handle_key(key)
 
             # Handle collision of player with a shot
-            shot_list = []
             for player in self.game.players:
-                # Generate a list of all shots currently fired
-                shot_list.append(self.game.get_shot(player))
+                # Generate a list of all players except for the current one
+                remaining_players = copy.copy(self.game.players)
+                remaining_players.remove(player)
 
-            # DEBUGGING PURPOSES
-            shot_list = [[], [QtCore.QLineF(QtCore.QLine(0, 0, 100, 0))]]
-
-            for player in self.game.players:
-                # Remove shot of current player from list of shots
-                customized_shot_list = shot_list
-                customized_shot_list[player.player_id] = []
-
-                # Check for collisions of player with all remaining shots in the list of shots
-                if self.game.get_shot_intersection_with_player(player, customized_shot_list):
-                    self.game_cycle_timer.stop()
+                # Check if one of the shots of all those players hits the current player
+                for shooter in remaining_players:
+                    if self.game.get_shot_intersection_with_player(player, shooter):
+                        self.game.hit_action(player, shooter)
 
             self.update()
 

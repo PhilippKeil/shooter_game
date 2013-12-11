@@ -1,6 +1,7 @@
 from player import Player
 from map import Map
 from game_painter import Paint
+import my_math
 
 from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF
 
@@ -168,21 +169,6 @@ class Game():
         return result
 
     @staticmethod
-    def get_shot_intersection_with_player(player, shots):
-        intersection = QPointF()
-        for shot in shots:
-            for section in shot:
-                for i in range(4):
-                    outlines = player.outlines_list
-                    section.intersect(outlines[i], intersection)
-
-        if intersection != QPointF():
-            print('intersection')
-            return True
-        else:
-            return False
-
-    @staticmethod
     def get_shot(player):
         """Returns a list of lines which represent the shot the given player is currently firing.
            Returns an empty list if no shot is fired."""
@@ -192,6 +178,24 @@ class Game():
             return []
         else:
             return shot
+
+    def get_shot_intersection_with_player(self, victim, shooter):
+        outlines = victim.outlines()
+        shot = self.get_shot(shooter)
+
+        for section in shot:
+            for outline in outlines:
+                intersection = QPointF()
+                section.intersect(outline, intersection)
+
+                # Check if intersection point is on the line or not
+                if my_math.point_on_line(intersection, outline):
+                    print('Intersection is on the outline')
+                    if my_math.point_on_line(intersection, section):
+                        print('Intersection is on the shot section')
+                        # Intersection is both on the outline and on the shot section
+                        return True
+        return False
 
     @staticmethod
     def get_shot_maximum_length(player):
@@ -212,3 +216,7 @@ class Game():
     @staticmethod
     def get_player_angle(player):
         return player.angle
+
+    @staticmethod
+    def hit_action(victim, shooter):
+        print(str(victim) + ' was hit by ' + str(shooter))

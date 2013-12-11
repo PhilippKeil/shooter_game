@@ -118,7 +118,7 @@ class Map():
         """
 
         self.add_object({'type': 'player',
-                         'position': QtCore.QPoint(10, 10),
+                         'position': QtCore.QPoint(30, 100),
                          'size': QtCore.QSize(10, 10),
                          'turn_speed': 2,
                          'move_speed': 3,
