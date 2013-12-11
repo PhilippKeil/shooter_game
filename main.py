@@ -1,7 +1,6 @@
 from player import Player
 from map import Map
 from game_painter import Paint
-import my_math
 
 from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF
 
@@ -189,12 +188,9 @@ class Game():
                 section.intersect(outline, intersection)
 
                 # Check if intersection point is on the line or not
-                if my_math.point_on_line(intersection, outline):
-                    print('Intersection is on the outline')
-                    if my_math.point_on_line(intersection, section):
-                        print('Intersection is on the shot section')
-                        # Intersection is both on the outline and on the shot section
-                        return True
+                if section.intersect(outline, intersection) == 1:
+                    # Both lines cross each other withing start/end point
+                    return True
         return False
 
     @staticmethod
