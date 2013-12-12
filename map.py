@@ -216,8 +216,6 @@ class Obstacle():
         # outline = line(i, i - 1)
 
         result = []
-        for i in range(len(self.polygon)):
-            print(self.polygon[i])
         # Index 0 is skipped because it has nothing to draw a line to
         # Start at index 1. Make a line from 0 to 1
         for a in range(1, len(self.polygon)):
