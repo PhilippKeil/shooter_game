@@ -45,7 +45,7 @@ colors = {'Turquoise': QtGui.QColor().fromRgb(26, 188, 156),
 
 
 class Map():
-    def __init__(self, load_type):
+    def __init__(self, load_type, save_file=None):
         # Contains every obstacle element that is present in the map
         self.obstacle_list = []
         # Contains the outlines of every obstacle element that is in the map
@@ -60,27 +60,29 @@ class Map():
         self.view_position = QtCore.QPoint(0, 0)
 
         # Init the map and declare which map to use
-        if load_type == 'debug':
+        if load_type == 'test':
             # Just load the debug map
-            self.load_test()
-        else:
-            print('load_type not supported')
+            self.convert_data_to_level(self.test_map())
+        elif load_type == 'file':
+            self.convert_data_to_level(self.load_from_file(save_file))
 
-    @staticmethod
-    def load_from_file(filename):
-        try:
-            with open(filename, 'rb') as f:
-                return pickle.load(f)
-        except IOError as e:
-            print('File could not be handled (' + e.message + ')')
+    def get_player_information(self):
+        return self.player_information
 
-    @staticmethod
-    def save_to_file(filename, data):
-        try:
-            with open(filename, 'wb') as f:
-                pickle.dump(data, f)
-        except IOError as e:
-            print('File could not be handled (' + e.message + ')')
+    def convert_data_to_level(self, data):
+        for obj in data:
+            # obj is either a list, containing basic information about the level,
+            # which is needed for every level (size and stuff)
+            # OR it is a dict which contains information about an object which should be loaded into the map
+            if type(obj) == dict:
+                self.add_object(obj)
+            elif type(obj) == list:
+                self.map_initialization(obj)
+
+    def map_initialization(self, data):
+        self.size = QtCore.QSize(data[0][0], data[0][1])
+        self.view_size = QtCore.QSize(data[1][0], data[1][1])
+        self.view_position = QtCore.QPoint(data[2][0], data[2][1])
 
     def add_object(self, d):
         if d['type'] == 'player':
@@ -116,92 +118,106 @@ class Map():
         else:
             print('Could not create object. Type (' + d['type'] + ') is unknown')
 
-    def load_test(self):
+    @staticmethod
+    def load_from_file(filename):
+        try:
+            with open(filename, 'rb') as f:
+                return pickle.load(f)
+        except IOError as e:
+            print('File could not be handled (' + e.message + ')')
 
-        # This method loads up a test map
-        self.size = QtCore.QSize(520, 500)
-        self.view_size = QtCore.QSize(300, 300)
-        self.view_position = QtCore.QPoint(0, 0)
+    @staticmethod
+    def save_to_file(filename, data):
+        try:
+            with open(filename, 'wb') as f:
+                pickle.dump(data, f)
+        except IOError as e:
+            print('File could not be handled (' + e.message + ')')
 
-        # Template:
+    @staticmethod
+    def test_map():
         """
-        self.add_object({'type': '',
-                         'position': QtCore.QPoint(),
-                         'brush': QtCore.Qt.,
-                         'brush_color': QtCore.Qt.,
-                         'pen': QtCore.Qt.,
-                         'pen_color': QtCore.Qt.,
-                         'texture': ''})
+        {'type': '',
+         'position': QtCore.QPoint(),
+         'brush': QtCore.Qt.,
+         'brush_color': QtCore.Qt.,
+         'pen': QtCore.Qt.,
+         'pen_color': QtCore.Qt.,
+         'texture': ''})
         """
+        # Map initialization for size, view_size, view_position
+        init_data = [(500, 600), (300, 300), (0, 0)]
 
-        self.add_object({'type': 'player',
-                         'position': QtCore.QPoint(30, 100),
-                         'size': QtCore.QSize(10, 10),
-                         'turn_speed': 2,
-                         'move_speed': 3,
-                         'brush': QtCore.Qt.SolidPattern,
-                         'pen': QtCore.Qt.SolidLine,
-                         'brush_color': QtCore.Qt.red,
-                         'pen_color': QtCore.Qt.black,
-                         'shot_pen': QtCore.Qt.SolidLine,
-                         'shot_pen_color': QtCore.Qt.red})
+        object_data = [{'type': 'player',
+                        'position': QtCore.QPoint(30, 100),
+                        'size': QtCore.QSize(10, 10),
+                        'turn_speed': 2,
+                        'move_speed': 3,
+                        'brush': QtCore.Qt.SolidPattern,
+                        'pen': QtCore.Qt.SolidLine,
+                        'brush_color': QtCore.Qt.red,
+                        'pen_color': QtCore.Qt.black,
+                        'shot_pen': QtCore.Qt.SolidLine,
+                        'shot_pen_color': QtCore.Qt.red},
 
-        self.add_object({'type': 'player',
-                         'position': QtCore.QPoint(10, 30),
-                         'size': QtCore.QSize(10, 10),
-                         'turn_speed': 2,
-                         'move_speed': 3,
-                         'brush': QtCore.Qt.SolidPattern,
-                         'pen': QtCore.Qt.SolidLine,
-                         'brush_color': QtCore.Qt.blue,
-                         'pen_color': QtCore.Qt.black,
-                         'shot_pen': QtCore.Qt.SolidLine,
-                         'shot_pen_color': QtCore.Qt.blue})
+                       {'type': 'player',
+                        'position': QtCore.QPoint(10, 30),
+                        'size': QtCore.QSize(10, 10),
+                        'turn_speed': 2,
+                        'move_speed': 3,
+                        'brush': QtCore.Qt.SolidPattern,
+                        'pen': QtCore.Qt.SolidLine,
+                        'brush_color': QtCore.Qt.blue,
+                        'pen_color': QtCore.Qt.black,
+                        'shot_pen': QtCore.Qt.SolidLine,
+                        'shot_pen_color': QtCore.Qt.blue},
 
-        self.add_object({'type': 'background',
-                         'texture': 'stonebrick.bmp',
-                         'shadow': 3})
+                       {'type': 'background',
+                        'texture': 'stonebrick.bmp',
+                        'shadow': 3},
 
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(100, 50),
-                                      QtCore.QPoint(200, 50),
-                                      QtCore.QPoint(200, 100),
-                                      QtCore.QPoint(100, 100)],
-                         'texture': 'planks_jungle.bmp'})
+                       {'type': 'obstacle',
+                        'position': [QtCore.QPoint(100, 50),
+                                     QtCore.QPoint(200, 50),
+                                     QtCore.QPoint(200, 100),
+                                     QtCore.QPoint(100, 100)],
+                        'texture': 'planks_jungle.bmp'},
 
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(0, 200),
-                                      QtCore.QPoint(200, 200),
-                                      QtCore.QPoint(200, 240),
-                                      QtCore.QPoint(180, 220),
-                                      QtCore.QPoint(20, 220),
-                                      QtCore.QPoint(0, 240)],
-                         'texture': 'planks_jungle.bmp'})
+                       {'type': 'obstacle',
+                        'position': [QtCore.QPoint(0, 200),
+                                     QtCore.QPoint(200, 200),
+                                     QtCore.QPoint(200, 240),
+                                     QtCore.QPoint(180, 220),
+                                     QtCore.QPoint(20, 220),
+                                     QtCore.QPoint(0, 240)],
+                        'texture': 'planks_jungle.bmp'},
 
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(200, 200),
-                                      QtCore.QPoint(220, 200),
-                                      QtCore.QPoint(220, 400),
-                                      QtCore.QPoint(200, 400)],
-                         'texture': 'planks_jungle.bmp'})
+                       {'type': 'obstacle',
+                        'position': [QtCore.QPoint(200, 200),
+                                     QtCore.QPoint(220, 200),
+                                     QtCore.QPoint(220, 400),
+                                     QtCore.QPoint(200, 400)],
+                        'texture': 'planks_jungle.bmp'},
 
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(0, 400),
-                                      QtCore.QPoint(20, 420),
-                                      QtCore.QPoint(220, 420),
-                                      QtCore.QPoint(220, 440),
-                                      QtCore.QPoint(0, 440)],
-                         'texture': 'planks_jungle.bmp'})
+                       {'type': 'obstacle',
+                        'position': [QtCore.QPoint(0, 400),
+                                     QtCore.QPoint(20, 420),
+                                     QtCore.QPoint(220, 420),
+                                     QtCore.QPoint(220, 440),
+                                     QtCore.QPoint(0, 440)],
+                        'texture': 'planks_jungle.bmp'},
 
-        self.add_object({'type': 'obstacle',
-                         'position': [QtCore.QPoint(390, 50),
-                                      QtCore.QPoint(500, 50),
-                                      QtCore.QPoint(500, 100),
-                                      QtCore.QPoint(390, 100)],
-                         'texture': 'cobblestone.bmp'})
+                       {'type': 'obstacle',
+                        'position': [QtCore.QPoint(390, 50),
+                                     QtCore.QPoint(500, 50),
+                                     QtCore.QPoint(500, 100),
+                                     QtCore.QPoint(390, 100)],
+                        'texture': 'cobblestone.bmp'}]
+        result = [init_data]
+        for obj in object_data:
+            result.append(obj)
 
-    def get_player_information(self):
-        return self.player_information
+        return result
 
 
 class Obj():
