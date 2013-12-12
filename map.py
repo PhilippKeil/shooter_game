@@ -119,18 +119,16 @@ class Map():
         else:
             print('Could not create object. Type (' + d['type'] + ') is unknown')
 
-    @staticmethod
-    def load_from_file(filename):
+    def load_from_file(self, filename):
         try:
-            with open(filename, 'rb') as f:
+            with open(os.path.dirname(__file__) + self.file_locations['levels'] + filename, 'rb') as f:
                 return pickle.load(f)
         except IOError as e:
             print('File could not be handled (' + e.message + ')')
 
-    @staticmethod
-    def save_to_file(filename, data):
+    def save_to_file(self, filename, data):
         try:
-            with open(filename, 'wb') as f:
+            with open(os.path.dirname(__file__) + self.file_locations['levels'] + filename, 'wb') as f:
                 pickle.dump(data, f)
         except IOError as e:
             print('File could not be handled (' + e.message + ')')

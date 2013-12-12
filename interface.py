@@ -11,8 +11,8 @@ config_file = 'config.cfg'
 config = ConfigParser.RawConfigParser()
 config.read(config_file)
 file_locations = {'textures': config.get('locations', 'textures'),
-             'sounds': config.get('locations', 'sounds'),
-             'levels': config.get('locations', 'levels')}
+                  'sounds': config.get('locations', 'sounds'),
+                  'levels': config.get('locations', 'levels')}
 
 defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'obstacle_brush_color': QtCore.Qt.black,
