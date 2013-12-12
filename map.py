@@ -66,12 +66,21 @@ class Map():
         else:
             print('load_type not supported')
 
-    def load_from_file(self, filename):
+    @staticmethod
+    def load_from_file(filename):
         try:
             with open(filename, 'rb') as f:
                 return pickle.load(f)
         except IOError as e:
-            print('Save could not be loaded' + e.message)
+            print('File could not be handled (' + e.message + ')')
+
+    @staticmethod
+    def save_to_file(filename, data):
+        try:
+            with open(filename, 'wb') as f:
+                pickle.dump(data, f)
+        except IOError as e:
+            print('File could not be handled (' + e.message + ')')
 
     def add_object(self, d):
         if d['type'] == 'player':
