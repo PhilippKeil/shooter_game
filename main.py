@@ -10,7 +10,7 @@ class Game():
     gameCycleInterval = 10  # Time in ms
     
     def __init__(self, list_of_key_setups, debug_key_setup, file_locations):
-        self.map = Map(file_locations, 'file', 'test_map')
+        self.map = Map(file_locations, 'file', 'test map')
         self.players = []
         self.debug_key_setup = debug_key_setup
         try:
