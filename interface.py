@@ -1,9 +1,18 @@
 import sys
 import copy
+import ConfigParser
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
 from main import Game
+
+config_file = 'config.cfg'
+
+config = ConfigParser.RawConfigParser()
+config.read(config_file)
+file_locations = {'textures': config.get('locations', 'textures'),
+             'sounds': config.get('locations', 'sounds'),
+             'levels': config.get('locations', 'levels')}
 
 defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'obstacle_brush_color': QtCore.Qt.black,
@@ -92,7 +101,7 @@ class GameWindow(QtGui.QFrame):
         QtGui.QFrame.__init__(self, parent)
 
         # Create a game instance
-        self.game = Game(player_key_setup, debug_key_setup)
+        self.game = Game(player_key_setup, debug_key_setup, file_locations)
 
         # Var definition
         self.key_list = []
@@ -139,7 +148,7 @@ class GameWindow(QtGui.QFrame):
         painter.setTransform(transform)
 
         # Draw a frame of the game
-        self.game.draw_game(painter, self.graphics, defaults)
+        self.game.draw_game(painter, self.graphics, defaults, file_locations)
 
         painter.end()
 

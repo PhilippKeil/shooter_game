@@ -108,7 +108,7 @@ class Paint():
                                    line.p2().y())))
 
     @staticmethod
-    def draw_obstacles(painter, obstacle_list, default_values):
+    def draw_obstacles(painter, obstacle_list, default_values, file_locations):
         """Draws obstacles"""
 
         for polygon in obstacle_list:
@@ -139,7 +139,7 @@ class Paint():
 
             if 'texture' in polygon.information:
                 texture = QtGui.QPixmap()
-                texture.load(os.path.dirname(__file__) + '/data/textures/' + polygon.information['texture'])
+                texture.load(os.path.dirname(__file__) + file_locations['textures'] + polygon.information['texture'])
                 brush.setTexture(texture)
 
             painter.setBrush(brush)
@@ -150,7 +150,7 @@ class Paint():
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
     @staticmethod
-    def draw_player(painter, player, default_values):
+    def draw_player(painter, player, default_values, file_locations):
         """Draws the player"""
         rect = Qr(player.pos, player.size)
 
@@ -179,7 +179,7 @@ class Paint():
 
         if 'texture' in player.information:
                 texture = QtGui.QPixmap()
-                texture.load(os.path.dirname(__file__) + '/data/textures/' + player.information['texture'])
+                texture.load(os.path.dirname(__file__) + file_locations['textures'] + player.information['texture'])
                 brush.setTexture(texture)
 
         painter.setBrush(brush)

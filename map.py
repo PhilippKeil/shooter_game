@@ -1,7 +1,7 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
-import os
 import pickle
+import os
 
 # Object parameters:
 # type: String (either 'player' or 'obstacle' atm)
@@ -19,7 +19,6 @@ import pickle
 #
 # type 'obstacle' exclusives:
 #   position: [QPoint, QPoint, ...]
-
 
 # from flatuicolors.com
 colors = {'Turquoise': QtGui.QColor().fromRgb(26, 188, 156),
@@ -45,7 +44,7 @@ colors = {'Turquoise': QtGui.QColor().fromRgb(26, 188, 156),
 
 
 class Map():
-    def __init__(self, load_type, save_file=None):
+    def __init__(self, file_locations, load_type, save_file=None):
         # Contains every obstacle element that is present in the map
         self.obstacle_list = []
         # Contains the outlines of every obstacle element that is in the map
@@ -53,6 +52,8 @@ class Map():
 
         # Save player information after map has been loaded
         self.player_information = []
+        # Save locations to textures and whatnot locally
+        self.file_locations = file_locations
 
         self.size = None
         self.view_size = None
@@ -105,7 +106,7 @@ class Map():
                 shadow = 1
 
             image = QtGui.QImage()
-            image.load(os.path.dirname(__file__) + '/data/textures/' + d['texture'])
+            image.load(os.path.dirname(__file__) + self.file_locations['textures'] + d['texture'])
             for y in range(image.height()):
                 for x in range(image.width()):
                     pixel = image.pixel(x, y)

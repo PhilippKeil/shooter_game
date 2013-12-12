@@ -9,8 +9,8 @@ class Game():
     # no effect???
     gameCycleInterval = 10  # Time in ms
     
-    def __init__(self, list_of_key_setups, debug_key_setup):
-        self.map = Map('file', 'test_map')
+    def __init__(self, list_of_key_setups, debug_key_setup, file_locations):
+        self.map = Map(file_locations, 'file', 'test_map')
         self.players = []
         self.debug_key_setup = debug_key_setup
         try:
@@ -88,7 +88,7 @@ class Game():
             else:
                 print('No action defined for DEBUG_EVENT (' + action[1] + ')')
 
-    def draw_game(self, painter, graphic_setting, defaults):
+    def draw_game(self, painter, graphic_setting, defaults, file_locations):
         # Draw the map background
         if graphic_setting == 'high':
             Paint.draw_background(painter, self.get_map_background(), self.get_map_size())
@@ -101,11 +101,11 @@ class Game():
                                defaults)
 
         # Draw obstacles
-        Paint.draw_obstacles(painter, self.get_obstacle_list(), defaults)
+        Paint.draw_obstacles(painter, self.get_obstacle_list(), defaults, file_locations)
 
         # Draw the model, indicator line and shot of every player
         for player in self.players:
-            Paint.draw_player(painter, player, defaults)
+            Paint.draw_player(painter, player, defaults, file_locations)
             Paint.draw_indicator_line(painter,
                                       player,
                                       self.get_player_pos(player),
