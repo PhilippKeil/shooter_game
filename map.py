@@ -1,6 +1,7 @@
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 import os
+import pickle
 
 # Object parameters:
 # type: String (either 'player' or 'obstacle' atm)
@@ -64,6 +65,13 @@ class Map():
             self.load_test()
         else:
             print('load_type not supported')
+
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'rb') as f:
+                return pickle.load(f)
+        except IOError as e:
+            print('Save could not be loaded' + e.message)
 
     def add_object(self, d):
         if d['type'] == 'player':
