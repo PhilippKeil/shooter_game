@@ -70,32 +70,45 @@ class Window(QtGui.QWidget):
         self.graphics = 'low'
 
         # Create a canvas for the game to run inside
-        self.game_window = GameWindow(self, self.graphics)
-        self.game_window.setFrameStyle(QtGui.QFrame.Box)
-        self.game_window.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.game_frame = GameFrame(self, self.graphics)
+        self.game_frame.setFixedSize(600, 510)
 
         # Layout management
         hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(self.game_window)
         vbox = QtGui.QVBoxLayout()
+
+        hbox.addWidget(self.game_frame)
         vbox.addLayout(hbox)
+
         self.setLayout(vbox)
 
         self.setWindowTitle('Shooter')
-
-        if self.fullscreen:
-            self.setGeometry(QtGui.QDesktopWidget.availableGeometry(QtGui.QApplication.desktop()))
-            self.game_window.setFixedSize(self.height(), self.height())
-            self.showFullScreen()
-            print('starting in fullscreen')
-        else:
-            self.setGeometry(1, 1, 500, 500)
-            self.move(center(self.frameGeometry(), QtGui.QDesktopWidget().frameGeometry()))
-            self.game_window.setFixedSize(self.width(), self.height())
-            self.show()
+        self.show()
 
 
-class GameWindow(QtGui.QFrame):
+class GameFrame(QtGui.QFrame):
+    def __init__(self, parent, graphics):
+        QtGui.QFrame.__init__(self, parent)
+
+        self.game_canvas = GameCanvas(self, graphics)
+        self.game_canvas.setFixedSize(500, 500)
+
+        self.game_canvas.setFrameStyle(QtGui.QFrame.Box)
+        self.game_canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+        self.log = QtGui.QTextEdit()
+
+        hbox = QtGui.QHBoxLayout()
+        hbox.addWidget(self.log)
+        hbox.addWidget(self.game_canvas)
+
+        vbox = QtGui.QVBoxLayout()
+        vbox.addLayout(hbox)
+
+        self.setLayout(vbox)
+
+
+class GameCanvas(QtGui.QFrame):
     def __init__(self, parent, graphics):
         # Initialize the UI element
         QtGui.QFrame.__init__(self, parent)
