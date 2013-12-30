@@ -42,7 +42,7 @@ class Game():
 
             # Check if the player left the viewable part of the map
             # Correct this part to show the player again
-            self.construct_view(self.players, self.get_map_size(), QSize(400, 400))
+            self.construct_view(self.players, self.get_map_size(), 100)
             return True
 
     def handle_key(self, key):
@@ -129,7 +129,7 @@ class Game():
             painter.setBrush(defaults['border_brush'])
             painter.drawRect(self.camera_frame)
 
-    def construct_view(self, players, map_size, minimum_size):
+    def construct_view(self, players, map_size, minimum_space_to_edge):
         """Constructs an area where all given players are inside"""
         leftmost = map_size.width()
         rightmost = 0
@@ -154,13 +154,10 @@ class Game():
 
         print('x1: %s y1: %s x2: %s y2: %s' % (str(leftmost), str(topmost), str(rightmost), str(bottommost)))
         # Construct an area from the positions
-        new_map_rect = QRect(QPoint(leftmost, topmost), QPoint(rightmost, bottommost))
-
-        # The view has a minimum size
-        if new_map_rect.width() < minimum_size.width():
-            new_map_rect.setWidth(minimum_size.width())
-        if new_map_rect.height() < minimum_size.height():
-            new_map_rect.setHeight(minimum_size.height())
+        new_map_rect = QRect(QPoint(leftmost - minimum_space_to_edge,
+                                    topmost - minimum_space_to_edge),
+                             QPoint(rightmost + minimum_space_to_edge,
+                                    bottommost + minimum_space_to_edge))
 
         # The view has to be 1:1 in aspect-ratio
         if new_map_rect.width() > new_map_rect.height():
