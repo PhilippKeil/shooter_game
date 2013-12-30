@@ -12,6 +12,11 @@ class Game():
     def __init__(self, list_of_key_setups, debug_key_setup, file_locations):
         self.map = Map(file_locations, 'test')
         self.players = []
+
+        self.developer = True
+        if self.developer:
+            self.camera_frame = None
+
         self.debug_key_setup = debug_key_setup
         try:
             for player_id in range(len(self.map.player_information)):
@@ -37,7 +42,7 @@ class Game():
 
             # Check if the player left the viewable part of the map
             # Correct this part to show the player again
-            self.construct_view(self.players, self.get_map_size())
+            self.construct_view(self.players, self.get_map_size(), QSize(400, 400))
             return True
 
     def handle_key(self, key):
@@ -119,11 +124,12 @@ class Game():
                                       defaults)
             Paint.draw_shot(painter, player, defaults, self.get_shot(player))
 
-        # Test drawing
-        painter.setBrush(defaults['border_brush'])
-        painter.drawRect(self.test)
+        # DEBUG camera area frame
+        if self.developer:
+            painter.setBrush(defaults['border_brush'])
+            painter.drawRect(self.camera_frame)
 
-    def construct_view(self, players, map_size):
+    def construct_view(self, players, map_size, minimum_size):
         """Constructs an area where all given players are inside"""
         leftmost = map_size.width()
         rightmost = 0
@@ -148,10 +154,26 @@ class Game():
 
         print('x1: %s y1: %s x2: %s y2: %s' % (str(leftmost), str(topmost), str(rightmost), str(bottommost)))
         # Construct an area from the positions
-        new_map_rect = QRect(leftmost, topmost, rightmost, bottommost)
+        new_map_rect = QRect(QPoint(leftmost, topmost), QPoint(rightmost, bottommost))
+
+        # The view has a minimum size
+        if new_map_rect.width() < minimum_size.width():
+            new_map_rect.setWidth(minimum_size.width())
+        if new_map_rect.height() < minimum_size.height():
+            new_map_rect.setHeight(minimum_size.height())
+
+        # The view has to be 1:1 in aspect-ratio
+        if new_map_rect.width() > new_map_rect.height():
+            new_map_rect.setHeight(new_map_rect.width())
+        elif new_map_rect.height() > new_map_rect.width():
+            new_map_rect.setWidth(new_map_rect.height())
 
         # Apply the newly created area as the view
-        self.test = new_map_rect
+        if self.developer:
+            self.camera_frame = QRect(new_map_rect)
+        else:
+            self.set_viewable_map_area_position(new_map_rect.topLeft())
+            self.set_viewable_map_area_size(new_map_rect.size())
 
     def player_shoot(self, player):
         tmp_line = QLineF(QPointF(player.pos), QPointF(player.pos + QPoint(1, 0)))
@@ -171,8 +193,7 @@ class Game():
         return self.map.size
 
     def set_viewable_map_area_size(self, size):
-        if size.width() <= self.map.size.width() and size.height() <= self.map.size.height():
-            self.map.view_size = size
+        self.map.view_size = size
 
     def set_viewable_map_area_position(self, position):
         self.map.view_position = position

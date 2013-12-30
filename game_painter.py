@@ -32,21 +32,8 @@ class Paint():
         pen.setColor(default_values['border_pen_color'])
         painter.setPen(pen)
 
-        if view_position.x() < 0:
-            print('view leaves map in x (lower than 0)')
-            painter.drawRect(view_position.x(), 0, abs(view_position.x()), map_size.height())
+        painter.drawRect(Qr(Qp(0, 0), map_size))
 
-        if view_position.y() < 0:
-            print('view leaves map in y (lower than 0)')
-            painter.drawRect(0, view_position.y(), map_size.width(), abs(view_position.y()))
-
-        if view_position.x() + view_size.width() > map_size.width():
-            print('view leaves map in x (higher than map width)')
-            painter.drawRect(map_size.width(), 0, map_size.width() + view_position.x(), map_size.height())
-
-        if view_position.y() + view_size.height() > map_size.height():
-            print('view leaves map in y (higher than map height)')
-            painter.drawRect(0, map_size.height(), map_size.width(), view_position.y())
 
     @staticmethod
     def draw_indicator_line(painter,

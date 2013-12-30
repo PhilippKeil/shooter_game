@@ -24,7 +24,7 @@ defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'player_pen_color': QtCore.Qt.red,
             'shot_pen': QtCore.Qt.DotLine,
             'shot_pen_color': QtCore.Qt.red,
-            'border_brush': QtCore.Qt.CrossPattern,
+            'border_brush': QtCore.Qt.NoBrush,
             'border_brush_color': QtCore.Qt.red,
             'border_pen': QtCore.Qt.SolidLine,
             'border_pen_color': QtCore.Qt.red}
