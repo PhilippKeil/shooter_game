@@ -145,7 +145,7 @@ class Map():
          'texture': ''})
         """
         # Map initialization for size, view_size, view_position
-        init_data = [(800, 600), (800, 600), (0, 0)]
+        init_data = [(800, 600), (400, 400), (0, 0)]
 
         object_data = [{'type': 'player',
                         'position': QtCore.QPoint(30, 100),

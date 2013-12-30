@@ -37,8 +37,11 @@ class Player():
         """Returns the ID of the player. Starting with 1 as the first player"""
         return 'Player ' + str(self.player_id + 1)
 
+    def rect(self):
+        return QtCore.QRect(self.pos, self.size)
+
     def outlines(self):
-        rect = QtCore.QRect(self.pos, self.size)
+        rect = self.rect()
         return [QtCore.QLineF(QtCore.QPointF(rect.topLeft()), QtCore.QPointF(rect.bottomLeft())),
                 QtCore.QLineF(QtCore.QPointF(rect.bottomLeft()), QtCore.QPointF(rect.bottomRight())),
                 QtCore.QLineF(QtCore.QPointF(rect.topLeft()), QtCore.QPointF(rect.topRight())),
