@@ -37,7 +37,7 @@ class Game():
 
             # Check if the player left the viewable part of the map
             # Correct this part to show the player again
-            self.check_view(player, self.get_viewable_map_area_size(), self.get_viewable_map_area_pos())
+            self.construct_view(self.players, self.get_map_size())
             return True
 
     def handle_key(self, key):
@@ -119,37 +119,35 @@ class Game():
                                       defaults)
             Paint.draw_shot(painter, player, defaults, self.get_shot(player))
 
-    def check_view(self, player, view_size, view_pos):
-        """Checks if player is inside boundaries of the view on the map. If not, view will be corrected"""
-        player_rect = player.rect()
+    def construct_view(self, players, map_size):
+        """Constructs an area where all given players are inside"""
+        leftmost = map_size.width()
+        rightmost = 0
+        topmost = map_size.height()
+        bottommost = 0
 
-        map_rect = QRect(view_pos, view_size)
+        # Search for the leftmost, rightmost, topmost and bottommost values of all player positions
+        for player in players:
+            player_rect = player.rect()
+            if player_rect.left() < leftmost:
+                # player pos is more to the left than any other player pos already searched through
+                leftmost = player_rect.left()
+            if player_rect.right() > rightmost:
+                # player pos is more to the right than any other player pos already searched through
+                rightmost = player_rect.right()
+            if player_rect.top() < topmost:
+                # player pos is more to the top than any other player pos already searched through
+                topmost = player_rect.top()
+            if player_rect.bottom() > bottommost:
+                # player pos is more to the bottom than any other player pos already searched through
+                bottommost = player_rect.bottom()
 
-        if player_rect.left() < map_rect.left():
-            #player left the view on the left side
-            print(str(player) + ' left view to the left')
-            # Change the view so the player is inside
-            map_rect.moveLeft(player_rect.left())
+        # Construct an area from the positions
+        new_map_rect = QRect(leftmost, topmost, rightmost, bottommost)
 
-        if player_rect.right() > map_rect.right():
-            #player left the view on the right side
-            print(str(player) + ' left view to the right')
-            # Change the view so the player is inside
-            map_rect.moveRight(player_rect.right())
-
-        if player_rect.top() < map_rect.top():
-            #player left the view on the top
-            print(str(player) + ' left view to the top')
-            # Change the view so the player is inside
-            map_rect.moveTop(player_rect.top())
-
-        if player_rect.bottom() > map_rect.bottom():
-            #player left the view on the bottom
-            print(str(player) + ' left view to the bottom')
-            # Change the view so the player is inside
-            map_rect.moveBottom(player_rect.bottom())
-
-        self.set_viewable_map_area_position(map_rect.topLeft())
+        # Apply the newly created area as the view
+        self.set_viewable_map_area_position(new_map_rect.topLeft())
+        self.set_viewable_map_area_size(new_map_rect.size())
 
     def player_shoot(self, player):
         tmp_line = QLineF(QPointF(player.pos), QPointF(player.pos + QPoint(1, 0)))
