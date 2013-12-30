@@ -10,7 +10,7 @@ class Game():
     gameCycleInterval = 10  # Time in ms
     
     def __init__(self, list_of_key_setups, debug_key_setup, file_locations):
-        self.map = Map(file_locations, 'file', 'test map')
+        self.map = Map(file_locations, 'test')
         self.players = []
         self.debug_key_setup = debug_key_setup
         try:
@@ -215,4 +215,6 @@ class Game():
 
     @staticmethod
     def hit_action(victim, shooter):
+        """Manages when a player is hit by another player"""
+        victim.is_hit()
         print(str(victim) + ' was hit by ' + str(shooter))

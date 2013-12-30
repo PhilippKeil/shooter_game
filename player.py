@@ -8,8 +8,20 @@ class Player():
         self.turn_speed = player_information['turn_speed']
         self.move_speed = player_information['move_speed']
 
+        # How long the player is invulnerable after being hit by a shot
+        self.invulnerability_after_hit = 1000
+
         self.key_dict = key_dict
         self.player_id = player_id
+
+        self.is_alive = True
+
+        # Create timer to make a player invulnerable when hit by a shot.
+        # Player is hit -> timer is fired
+        # As long as timer is alive, no shot can hit the player
+        self.invulnerability_timer = QtCore.QTimer()
+        self.invulnerability_timer.setInterval(self.invulnerability_after_hit)
+        self.invulnerability_timer.setSingleShot(True)
 
         self.information = {}
         for key in player_information:
@@ -93,18 +105,15 @@ class Player():
         """Force a player move command."""
         self.pos = point
 
-    def get_pos(self):
-        return self.pos
-
-    def get_size(self):
-        return self.size
+    def is_hit(self):
+        self.invulnerability_timer.start()
 
 
 class Shot():
     def __init__(self):
         self.start_pos = QtCore.QPoint(0, 0)
         self.end_pos = QtCore.QPoint(0, 0)
-        self.shot_up_time = 1000  # ms how long the shot should be visible
+        self.shot_up_time = 100  # ms how long the shot should be visible
         self.max_length = 1000
         self.current_shot = []
 

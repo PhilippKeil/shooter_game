@@ -145,7 +145,7 @@ class Map():
          'texture': ''})
         """
         # Map initialization for size, view_size, view_position
-        init_data = [(500, 600), (300, 300), (0, 0)]
+        init_data = [(800, 600), (800, 600), (0, 0)]
 
         object_data = [{'type': 'player',
                         'position': QtCore.QPoint(30, 100),
@@ -176,42 +176,58 @@ class Map():
                         'shadow': 3},
 
                        {'type': 'obstacle',
-                        'position': [QtCore.QPoint(100, 50),
-                                     QtCore.QPoint(200, 50),
-                                     QtCore.QPoint(200, 100),
-                                     QtCore.QPoint(100, 100)],
+                        'position': [QtCore.QPoint(290, 0),
+                                     QtCore.QPoint(510, 0),
+                                     QtCore.QPoint(510, 60),
+                                     QtCore.QPoint(400, 60),
+                                     QtCore.QPoint(400, 140),
+                                     QtCore.QPoint(380, 140),
+                                     QtCore.QPoint(380, 60),
+                                     QtCore.QPoint(290, 60)],
                         'texture': 'planks_jungle.bmp'},
 
                        {'type': 'obstacle',
-                        'position': [QtCore.QPoint(0, 200),
-                                     QtCore.QPoint(200, 200),
-                                     QtCore.QPoint(200, 240),
-                                     QtCore.QPoint(180, 220),
-                                     QtCore.QPoint(20, 220),
-                                     QtCore.QPoint(0, 240)],
+                        'position': [QtCore.QPoint(290, 110),
+                                     QtCore.QPoint(310, 110),
+                                     QtCore.QPoint(310, 190),
+                                     QtCore.QPoint(490, 190),
+                                     QtCore.QPoint(490, 110),
+                                     QtCore.QPoint(510, 110),
+                                     QtCore.QPoint(510, 310),
+                                     QtCore.QPoint(490, 310),
+                                     QtCore.QPoint(490, 210),
+                                     QtCore.QPoint(310, 210),
+                                     QtCore.QPoint(310, 220),
+                                     QtCore.QPoint(290, 220)],
                         'texture': 'planks_jungle.bmp'},
 
                        {'type': 'obstacle',
-                        'position': [QtCore.QPoint(200, 200),
-                                     QtCore.QPoint(220, 200),
-                                     QtCore.QPoint(220, 400),
-                                     QtCore.QPoint(200, 400)],
+                        'position': [QtCore.QPoint(290, 270),
+                                     QtCore.QPoint(310, 270),
+                                     QtCore.QPoint(310, 370),
+                                     QtCore.QPoint(490, 370),
+                                     QtCore.QPoint(490, 360),
+                                     QtCore.QPoint(510, 360),
+                                     QtCore.QPoint(510, 470),
+                                     QtCore.QPoint(490, 470),
+                                     QtCore.QPoint(490, 390),
+                                     QtCore.QPoint(310, 390),
+                                     QtCore.QPoint(310, 470),
+                                     QtCore.QPoint(290, 470)],
                         'texture': 'planks_jungle.bmp'},
 
                        {'type': 'obstacle',
-                        'position': [QtCore.QPoint(0, 400),
-                                     QtCore.QPoint(20, 420),
-                                     QtCore.QPoint(220, 420),
-                                     QtCore.QPoint(220, 440),
-                                     QtCore.QPoint(0, 440)],
-                        'texture': 'planks_jungle.bmp'},
+                        'position': [QtCore.QPoint(290, 530),
+                                     QtCore.QPoint(400, 530),
+                                     QtCore.QPoint(400, 450),
+                                     QtCore.QPoint(420, 450),
+                                     QtCore.QPoint(420, 530),
+                                     QtCore.QPoint(510, 530),
+                                     QtCore.QPoint(510, 600),
+                                     QtCore.QPoint(290, 600)],
+                        'texture': 'planks_jungle.bmp'}]
 
-                       {'type': 'obstacle',
-                        'position': [QtCore.QPoint(390, 50),
-                                     QtCore.QPoint(500, 50),
-                                     QtCore.QPoint(500, 100),
-                                     QtCore.QPoint(390, 100)],
-                        'texture': 'cobblestone.bmp'}]
+
         result = [init_data]
         for obj in object_data:
             result.append(obj)

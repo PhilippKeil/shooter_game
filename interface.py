@@ -71,7 +71,7 @@ class Window(QtGui.QWidget):
 
         # Create a canvas for the game to run inside
         self.game_frame = GameFrame(self, self.graphics)
-        self.game_frame.setFixedSize(600, 510)
+        self.game_frame.setFixedSize(550, 510)
 
         # Layout management
         hbox = QtGui.QHBoxLayout()
@@ -96,12 +96,8 @@ class GameFrame(QtGui.QFrame):
         self.game_canvas.setFrameStyle(QtGui.QFrame.Box)
         self.game_canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-        self.log = QtGui.QTextEdit()
-
         hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(self.log)
         hbox.addWidget(self.game_canvas)
-
         vbox = QtGui.QVBoxLayout()
         vbox.addLayout(hbox)
 
@@ -133,14 +129,16 @@ class GameCanvas(QtGui.QFrame):
 
             # Handle collision of player with a shot
             for player in self.game.players:
-                # Generate a list of all players except for the current one
-                remaining_players = copy.copy(self.game.players)
-                remaining_players.remove(player)
+                # Check if the player is vulnerable
+                if not player.invulnerability_timer.isActive():
+                    # Generate a list of all players except for the current one
+                    remaining_players = copy.copy(self.game.players)
+                    remaining_players.remove(player)
 
-                # Check if one of the shots of all those players hits the current player
-                for shooter in remaining_players:
-                    if self.game.get_shot_intersection_with_player(player, shooter):
-                        self.game.hit_action(player, shooter)
+                    # Check if one of the shots of all those players hits the current player
+                    for shooter in remaining_players:
+                        if self.game.get_shot_intersection_with_player(player, shooter):
+                            self.game.hit_action(player, shooter)
 
             self.update()
 
