@@ -119,6 +119,10 @@ class Game():
                                       defaults)
             Paint.draw_shot(painter, player, defaults, self.get_shot(player))
 
+        # Test drawing
+        painter.setBrush(defaults['border_brush'])
+        painter.drawRect(self.test)
+
     def construct_view(self, players, map_size):
         """Constructs an area where all given players are inside"""
         leftmost = map_size.width()
@@ -142,12 +146,12 @@ class Game():
                 # player pos is more to the bottom than any other player pos already searched through
                 bottommost = player_rect.bottom()
 
+        print('x1: %s y1: %s x2: %s y2: %s' % (str(leftmost), str(topmost), str(rightmost), str(bottommost)))
         # Construct an area from the positions
         new_map_rect = QRect(leftmost, topmost, rightmost, bottommost)
 
         # Apply the newly created area as the view
-        self.set_viewable_map_area_position(new_map_rect.topLeft())
-        self.set_viewable_map_area_size(new_map_rect.size())
+        self.test = new_map_rect
 
     def player_shoot(self, player):
         tmp_line = QLineF(QPointF(player.pos), QPointF(player.pos + QPoint(1, 0)))
