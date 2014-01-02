@@ -171,6 +171,18 @@ class Map():
                         'shot_pen': QtCore.Qt.SolidLine,
                         'shot_pen_color': QtCore.Qt.blue},
 
+                       {'type': 'player',
+                        'position': QtCore.QPoint(10, 50),
+                        'size': QtCore.QSize(10, 10),
+                        'turn_speed': 2,
+                        'move_speed': 3,
+                        'brush': QtCore.Qt.SolidPattern,
+                        'pen': QtCore.Qt.SolidLine,
+                        'brush_color': QtCore.Qt.green,
+                        'pen_color': QtCore.Qt.black,
+                        'shot_pen': QtCore.Qt.SolidLine,
+                        'shot_pen_color': QtCore.Qt.green},
+
                        {'type': 'background',
                         'texture': 'stonebrick.bmp',
                         'shadow': 3},

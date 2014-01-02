@@ -152,7 +152,6 @@ class Game():
                 # player pos is more to the bottom than any other player pos already searched through
                 bottommost = player_rect.bottom()
 
-        print('x1: %s y1: %s x2: %s y2: %s' % (str(leftmost), str(topmost), str(rightmost), str(bottommost)))
         # Construct an area from the positions
         new_map_rect = QRect(QPoint(leftmost - minimum_space_to_edge,
                                     topmost - minimum_space_to_edge),
