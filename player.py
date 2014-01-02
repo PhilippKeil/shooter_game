@@ -66,13 +66,13 @@ class Player():
                                                   self.pos.y() + move_direction.y() * a),
                                     self.size)
 
-            # Check if new positions are inside the viewable area of the map
+            # Check if new positions are inside the map
             if new_rect.topLeft().x() >= 0 and new_rect.topLeft().y() >= 0 and \
                     new_rect.bottomRight().x() <= map_size.width() and \
                     new_rect.bottomRight().y() <= map_size.height():
-                # Positions are inside the window
+                # Positions are inside the map
                 # Check if player comes into contact with an obstacle
-                # Check if uL or bR of the player are contained by an obstacle
+                # Check if one of the edges of the player rect are inside an obstacle
 
                 # Iterate through the list of obstacles
                 for a in range(len(obstacle_list)):
@@ -103,6 +103,16 @@ class Player():
         else:
             # Not even the smallest possible step (1) was possible
             return self.pos
+
+    def check_standing_on_powerup(self, powerup_list):
+        """Checks if a player is currently standing on a powerup platform. Returns True/False"""
+        for powerup in powerup_list:
+            if powerup.polygon.containsPoint(self.pos, 0):
+                # Player is currently standing on powerup platform
+                return True
+            else:
+                continue
+        return False
 
     def force_move(self, point):
         """Force a player move command."""

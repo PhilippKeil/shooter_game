@@ -46,9 +46,13 @@ colors = {'Turquoise': QtGui.QColor().fromRgb(26, 188, 156),
 class Map():
     def __init__(self, file_locations, load_type, save_file=None):
         # Contains every obstacle element that is present in the map
+        # Used for drawing
         self.obstacle_list = []
         # Contains the outlines of every obstacle element that is in the map
+        # Used for collision
         self.outlines_list = []
+        # Contains every powerup platform that is present in the map
+        self.powerup_list = []
 
         # Save player information after map has been loaded
         self.player_information = []
@@ -116,6 +120,15 @@ class Map():
                     image.setPixel(x, y, QtGui.qRgba(r, g, b, 255))
             self.background = QtGui.QPixmap()
             self.background.convertFromImage(image, QtCore.Qt.DiffuseAlphaDither)
+        elif d['type'] == 'powerup':
+            # Create a powerup
+            try:
+                powerup = Powerup(d)
+            except ValueError as e:
+                print('Could not create powerup because ' + e.message)
+            else:
+                self.powerup_list.append(powerup)
+
         else:
             print('Could not create object. Type (' + d['type'] + ') is unknown')
 
@@ -237,8 +250,12 @@ class Map():
                                      QtCore.QPoint(510, 530),
                                      QtCore.QPoint(510, 600),
                                      QtCore.QPoint(290, 600)],
-                        'texture': 'planks_jungle.bmp'}]
-
+                        'texture': 'planks_jungle.bmp'},
+                       {'type': 'powerup',
+                        'position': [QtCore.QPoint(100, 100),
+                                     QtCore.QPoint(130, 100),
+                                     QtCore.QPoint(130, 130),
+                                     QtCore.QPoint(100, 130)]}]
 
         result = [init_data]
         for obj in object_data:
@@ -248,16 +265,6 @@ class Map():
 
 
 class Obj():
-    def __init__(self):
-        self.pos = None
-        self.size = None
-        self.polygon = None
-
-    def center(self):
-        return QtCore.QRect(self.pos, self.size).center()
-
-
-class Obstacle():
     def __init__(self, d):
         if 'position' in d:
             self.polygon = QtGui.QPolygon(d['position'])
@@ -284,3 +291,13 @@ class Obstacle():
         result.append(QtCore.QLineF(QtCore.QPointF(self.polygon[len(self.polygon) - 1]),
                                     QtCore.QPointF(self.polygon[0])))
         return result
+
+
+class Obstacle(Obj):
+    def __init__(self, d):
+        Obj.__init__(self, d)
+
+
+class Powerup(Obj):
+    def __init__(self, d):
+        Obj.__init__(self, d)

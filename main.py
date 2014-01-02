@@ -2,16 +2,22 @@ from player import Player
 from map import Map
 from game_painter import Paint
 
-from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF
+from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF, QTimer, QBasicTimer
 
 
 class Game():
-    # no effect???
-    gameCycleInterval = 10  # Time in ms
-    
     def __init__(self, list_of_key_setups, debug_key_setup, file_locations):
         self.map = Map(file_locations, 'test')
         self.players = []
+        self.game_cycle_interval = 10
+
+        self.powerup_spawn_time = 10000
+        self.powerup_timer = QTimer()
+        self.powerup_timer.setInterval(self.powerup_spawn_time)
+        self.powerup_timer.setSingleShot(True)
+
+        self.game_cycle_timer = QBasicTimer()
+        self.game_cycle_timer.start(self.game_cycle_interval, self)
 
         self.developer = True
         if self.developer:
@@ -32,13 +38,21 @@ class Game():
         new_player_pos = player.try_move(move_direction,
                                          player.move_speed,
                                          self.map.size,
-                                         self.map.obstacle_list)
+                                         self.get_obstacle_list())
         if new_player_pos == player.pos:
             # Player wasn't moved
             return False
         else:
-            # Player was moved
+            # The proposed player pos differs from the current
+            # Therefore the player is able to move to the new_pos
             player.force_move(new_player_pos)
+
+            # Check if the player is now standing on a powerup platform
+            if player.check_standing_on_powerup(self.get_powerup_list()):
+                # Player is standing on a powerup
+                player.apply_powerup(self.current_powerup)
+                self.powerup_timer.start()
+                self.create_powerup()
 
             # Check if the player left the viewable part of the map
             # Correct this part to show the player again
@@ -111,6 +125,9 @@ class Game():
 
         # Draw obstacles
         Paint.draw_obstacles(painter, self.get_obstacle_list(), defaults, file_locations)
+
+        # Draw powerups
+        Paint.draw_powerup(painter, self.get_powerup_list(), defaults, file_locations)
 
         # Draw the model, indicator line and shot of every player
         for player in self.players:
@@ -197,11 +214,18 @@ class Game():
     def get_obstacle_list(self):
         return self.map.obstacle_list
 
+    def get_powerup_list(self):
+        return self.map.powerup_list
+
     def get_map_background(self):
         return self.map.background
 
     def try_shot(self, player, start_point, end_point):
         player.shot.set(start_point, end_point, self.map.outlines_list, self.map.size)
+
+    def timerEvent(self, evbe):
+        pass
+
 
     @staticmethod
     def turn_player(player, direction):

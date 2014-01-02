@@ -137,6 +137,48 @@ class Paint():
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
     @staticmethod
+    def draw_powerup(painter, powerup_list, default_values, file_locations):
+        """Draws powerup platforms and the powerup if present"""
+        for powerup in powerup_list:
+            point_list = []
+
+            brush = QtGui.QBrush()
+            pen = QtGui.QPen()
+
+            if 'brush' in powerup.information:
+                brush.setStyle(powerup.information['brush'])
+            else:
+                brush.setStyle(default_values['obstacle_brush'])
+
+            if 'brush_color' in powerup.information:
+                brush.setColor(powerup.information['brush_color'])
+            else:
+                brush.setColor(default_values['obstacle_brush_color'])
+
+            if 'pen' in powerup.information:
+                pen.setStyle(powerup.information['pen'])
+            else:
+                pen.setStyle(default_values['obstacle_pen'])
+
+            if 'pen_color' in powerup.information:
+                pen.setColor(powerup.information['pen_color'])
+            else:
+                pen.setColor(default_values['obstacle_pen_color'])
+
+            if 'texture' in powerup.information:
+                texture = QtGui.QPixmap()
+                texture.load(os.path.dirname(__file__) + file_locations['textures'] + polygon.information['texture'])
+                brush.setTexture(texture)
+
+            painter.setBrush(brush)
+            painter.setPen(pen)
+
+            for point in powerup.polygon:
+                point_list.append(Qp(point.x(), point.y()))
+            painter.drawPolygon(QtGui.QPolygon(point_list))
+
+
+    @staticmethod
     def draw_player(painter, player, default_values, file_locations):
         """Draws the player"""
         rect = Qr(player.pos, player.size)

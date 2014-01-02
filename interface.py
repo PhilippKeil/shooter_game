@@ -116,32 +116,6 @@ class GameCanvas(QtGui.QFrame):
         self.key_list = []
         self.graphics = graphics
 
-        self.game_cycle_timer = QtCore.QBasicTimer()
-        self.game_cycle_timer.start(Game.gameCycleInterval, self)
-
-    def timerEvent(self, event):
-        if event.timerId() == self.game_cycle_timer.timerId():
-            # The game_cycle_timer fired the event
-
-            # Handle key presses
-            for key in self.key_list:
-                self.game.handle_key(key)
-
-            # Handle collision of player with a shot
-            for player in self.game.players:
-                # Check if the player is vulnerable
-                if not player.invulnerability_timer.isActive():
-                    # Generate a list of all players except for the current one
-                    remaining_players = copy.copy(self.game.players)
-                    remaining_players.remove(player)
-
-                    # Check if one of the shots of all those players hits the current player
-                    for shooter in remaining_players:
-                        if self.game.get_shot_intersection_with_player(player, shooter):
-                            self.game.hit_action(player, shooter)
-
-            self.update()
-
     def paintEvent(self, event):
         """Reimplementation of the paint Event"""
         painter = QtGui.QPainter()
