@@ -53,6 +53,8 @@ class Map():
         self.outlines_list = []
         # Contains every powerup platform that is present in the map
         self.powerup_list = []
+        # Contains effects for every powerup on the map
+        self.powerup_effect_dict = {}
 
         # Save player information after map has been loaded
         self.player_information = []
@@ -128,7 +130,12 @@ class Map():
                 print('Could not create powerup because ' + e.message)
             else:
                 self.powerup_list.append(powerup)
-
+                for key in iter(d['available_powerups']):
+                    # Iterate through every available powerup on that powerup platform
+                    # Append the powerup effects to powerup_effect_dict if they are not present yet
+                    if not key in self.powerup_effect_dict:
+                        # The powerup available on that platform is not yet inside the dict of powerup effects
+                        self.powerup_effect_dict[key] = d['available_powerups'][key]
         else:
             print('Could not create object. Type (' + d['type'] + ') is unknown')
 
@@ -162,9 +169,6 @@ class Map():
 
         object_data = [{'type': 'player',
                         'position': QtCore.QPoint(30, 100),
-                        'size': QtCore.QSize(10, 10),
-                        'turn_speed': 2,
-                        'move_speed': 3,
                         'brush': QtCore.Qt.SolidPattern,
                         'pen': QtCore.Qt.SolidLine,
                         'brush_color': QtCore.Qt.red,
@@ -251,11 +255,31 @@ class Map():
                                      QtCore.QPoint(510, 600),
                                      QtCore.QPoint(290, 600)],
                         'texture': 'planks_jungle.bmp'},
+
                        {'type': 'powerup',
-                        'position': [QtCore.QPoint(100, 100),
-                                     QtCore.QPoint(130, 100),
-                                     QtCore.QPoint(130, 130),
-                                     QtCore.QPoint(100, 130)]}]
+                        'position': [QtCore.QPoint(385, 275),
+                                     QtCore.QPoint(415, 275),
+                                     QtCore.QPoint(415, 305),
+                                     QtCore.QPoint(385, 305)],
+                        'available_powerups': {'move_faster': 10,
+                                               'turn_faster': 5,
+                                               'shot_longer': 2000}},
+
+                       {'type': 'powerup',
+                        'position': [QtCore.QPoint(185, 275),
+                                     QtCore.QPoint(215, 275),
+                                     QtCore.QPoint(215, 305),
+                                     QtCore.QPoint(185, 305)],
+                        'available_powerups': {'move_faster': 5,
+                                               'turn_faster': 5}},
+
+                        {'type': 'powerup',
+                        'position': [QtCore.QPoint(585, 275),
+                                     QtCore.QPoint(615, 275),
+                                     QtCore.QPoint(615, 305),
+                                     QtCore.QPoint(585, 305)],
+                        'available_powerups': {'move_faster': 5,
+                                               'turn_faster': 5}}]
 
         result = [init_data]
         for obj in object_data:
@@ -301,3 +325,4 @@ class Obstacle(Obj):
 class Powerup(Obj):
     def __init__(self, d):
         Obj.__init__(self, d)
+        self.available_powerups = d['available_powerups']

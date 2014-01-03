@@ -2,11 +2,16 @@ from PyQt4 import QtCore
 
 
 class Player():
-    def __init__(self, player_information, key_dict, player_id):
+    def __init__(self, player_information, player_defaults, key_dict, player_id):
         self.pos = player_information['position']
-        self.size = player_information['size']
-        self.turn_speed = player_information['turn_speed']
-        self.move_speed = player_information['move_speed']
+
+        self.size = player_defaults['size']
+        self.turn_speed = player_defaults['turn_speed']
+        self.move_speed = player_defaults['move_speed']
+        self.shot_max_length = player_defaults['shot_length']
+        self.powerup_duration = player_defaults['powerup_duration']
+        self.consumed_powerup = ''
+        self.defaults = player_defaults
 
         # How long the player is invulnerable after being hit by a shot
         self.invulnerability_after_hit = 1000
@@ -18,17 +23,22 @@ class Player():
 
         # Create timer to make a player invulnerable when hit by a shot.
         # Player is hit -> timer is fired
-        # As long as timer is alive, no shot can hit the player
+        # As long as timer is active, no shot can hit the player
         self.invulnerability_timer = QtCore.QTimer()
         self.invulnerability_timer.setInterval(self.invulnerability_after_hit)
         self.invulnerability_timer.setSingleShot(True)
+
+        # As long as timer is active, the powerup is not being removed from the player
+        self.powerup_timer = QtCore.QTimer()
+        self.powerup_timer.setInterval(self.powerup_duration)
+        self.powerup_timer.setSingleShot(True)
 
         self.information = {}
         for key in player_information:
             if key != 'position' or key != 'size' or key != 'turn_speed' or key != 'move_speed':
                 self.information[key] = player_information[key]
 
-        self.shot = Shot()
+        self.shot = Shot(self.shot_max_length)
         self.angle = 0
         self.indi_line_length = 30
         self.next_move_direction = QtCore.QPoint(0, 0)
@@ -105,14 +115,44 @@ class Player():
             return self.pos
 
     def check_standing_on_powerup(self, powerup_list):
-        """Checks if a player is currently standing on a powerup platform. Returns True/False"""
+        """Checks if a player is currently standing on a powerup platform. Returns the platform"""
         for powerup in powerup_list:
             if powerup.polygon.containsPoint(self.pos, 0):
                 # Player is currently standing on powerup platform
-                return True
+                return powerup
             else:
                 continue
-        return False
+        return None
+
+    def apply_powerup(self, powerup, effects):
+        try:
+            # Apply powerup
+            if powerup == 'move_faster':
+                self.move_speed = effects[powerup]
+            elif powerup == 'turn_faster':
+                self.turn_speed = effects[powerup]
+            elif powerup == 'shot_longer':
+                self.shot.max_length = effects[powerup]
+            else:
+                raise ValueError('Unknown powerup type (%s)' % powerup)
+        except ValueError as e:
+            # Couldn't apply powerup
+            print(e.message)
+        else:
+            self.consumed_powerup = powerup
+            self.powerup_timer.start()
+            return True
+
+    def try_remove_powerup(self):
+        if not self.powerup_timer.isActive():
+            # Timer is not active
+            # The powerup is removed
+            if self.consumed_powerup == 'move_faster':
+                self.move_speed = self.defaults['move_speed']
+            elif self.consumed_powerup == 'turn_faster':
+                self.turn_speed = self.defaults['turn_speed']
+            elif self.consumed_powerup == 'shot_longer':
+                self.shot.max_length = self.defaults['shot_length']
 
     def force_move(self, point):
         """Force a player move command."""
@@ -123,11 +163,11 @@ class Player():
 
 
 class Shot():
-    def __init__(self):
+    def __init__(self, max_length):
         self.start_pos = QtCore.QPoint(0, 0)
         self.end_pos = QtCore.QPoint(0, 0)
         self.shot_up_time = 100  # ms how long the shot should be visible
-        self.max_length = 1000
+        self.max_length = max_length
         self.current_shot = []
 
         self.shot_timer = QtCore.QTimer()

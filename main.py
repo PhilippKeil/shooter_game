@@ -1,33 +1,34 @@
 from player import Player
 from map import Map
 from game_painter import Paint
+import random
 
-from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF, QTimer, QBasicTimer
+from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF, QTimer, QObject
 
 
-class Game():
-    def __init__(self, list_of_key_setups, debug_key_setup, file_locations):
+class Game(QObject):
+    def __init__(self, player_defaults, list_of_key_setups, debug_key_setup, file_locations):
+        QObject.__init__(self)
         self.map = Map(file_locations, 'test')
         self.players = []
+
         self.game_cycle_interval = 10
 
-        self.powerup_spawn_time = 10000
-        self.powerup_timer = QTimer()
-        self.powerup_timer.setInterval(self.powerup_spawn_time)
-        self.powerup_timer.setSingleShot(True)
-
-        self.game_cycle_timer = QBasicTimer()
-        self.game_cycle_timer.start(self.game_cycle_interval, self)
+        self.powerup_spawn_time = 5000
+        self.powerup_cooldown_timer = QTimer()
+        self.powerup_cooldown_timer.setInterval(self.powerup_spawn_time)
+        self.powerup_cooldown_timer.setSingleShot(True)
+        self.current_powerup = ''
 
         self.developer = True
         if self.developer:
             self.camera_frame = None
-
         self.debug_key_setup = debug_key_setup
         try:
             for player_id in range(len(self.map.player_information)):
                 # Create as many players in the game as there are objects of players in the map
                 self.players.append(Player(self.map.player_information[player_id],
+                                           player_defaults,
                                            list_of_key_setups[player_id],
                                            player_id))
         except IndexError:
@@ -48,16 +49,28 @@ class Game():
             player.force_move(new_player_pos)
 
             # Check if the player is now standing on a powerup platform
-            if player.check_standing_on_powerup(self.get_powerup_list()):
-                # Player is standing on a powerup
-                player.apply_powerup(self.current_powerup)
-                self.powerup_timer.start()
-                self.create_powerup()
+            possible_powerup = player.check_standing_on_powerup(self.get_powerup_list())
+            if possible_powerup is not None:
+                # Player stands on a powerup platform
+                if not self.powerup_cooldown_timer.isActive():
+                    # The powerup cooldown is over
+                    if self.current_powerup in possible_powerup.available_powerups:
+                        # The powerup platform is supporting the current powerup
+                        if player.apply_powerup(self.current_powerup, possible_powerup.available_powerups):
+                            # Application of powerup was successful
+                            # Reset current powerup and start the cooldown
+                            self.current_powerup = ''
+                            self.powerup_cooldown_timer.start()
 
             # Check if the player left the viewable part of the map
             # Correct this part to show the player again
             self.construct_view(self.players, self.get_map_size(), 100)
             return True
+
+    def timerEvent(self, event):
+        if event.timerId == self.powerup_cooldown_timer.timerId():
+            # Powerup cooldown timer fired an event
+            self.create_powerup()
 
     def handle_key(self, key):
         action = (None, None)
@@ -111,7 +124,7 @@ class Game():
             else:
                 print('No action defined for DEBUG_EVENT (' + action[1] + ')')
 
-    def draw_game(self, painter, graphic_setting, defaults, file_locations):
+    def draw_game(self, painter, graphic_setting, defaults, powerup_colors, file_locations):
         # Draw the map background
         if graphic_setting == 'high':
             Paint.draw_background(painter, self.get_map_background(), self.get_map_size())
@@ -127,7 +140,7 @@ class Game():
         Paint.draw_obstacles(painter, self.get_obstacle_list(), defaults, file_locations)
 
         # Draw powerups
-        Paint.draw_powerup(painter, self.get_powerup_list(), defaults, file_locations)
+        Paint.draw_powerups(painter, self.get_powerup_list(), self.current_powerup, defaults, powerup_colors, file_locations)
 
         # Draw the model, indicator line and shot of every player
         for player in self.players:
@@ -223,9 +236,12 @@ class Game():
     def try_shot(self, player, start_point, end_point):
         player.shot.set(start_point, end_point, self.map.outlines_list, self.map.size)
 
-    def timerEvent(self, evbe):
-        pass
-
+    def try_create_powerup(self):
+        if not self.powerup_cooldown_timer.isActive():
+            if self.current_powerup == '':
+                # Select one of the powerups in the powerup_effects dict as the new powerup
+                self.current_powerup = random.choice(self.map.powerup_effect_dict.keys())
+                print('New powerup: ' + self.current_powerup)
 
     @staticmethod
     def turn_player(player, direction):

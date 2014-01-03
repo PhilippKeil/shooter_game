@@ -27,7 +27,20 @@ defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'border_brush': QtCore.Qt.NoBrush,
             'border_brush_color': QtCore.Qt.red,
             'border_pen': QtCore.Qt.SolidLine,
-            'border_pen_color': QtCore.Qt.red}
+            'border_pen_color': QtCore.Qt.red,
+            'powerup_brush': QtCore.Qt.SolidPattern,
+            'powerup_pen': QtCore.Qt.DotLine,
+            'powerup_pen_color': QtCore.Qt.black}
+
+powerup_colors = {'turn_faster': QtCore.Qt.red,
+                  'move_faster': QtCore.Qt.green,
+                  'shot_longer': QtCore.Qt.blue}
+
+player_defaults = {'move_speed': 2,
+                   'turn_speed': 3,
+                   'size': QtCore.QSize(10, 10),
+                   'powerup_duration': 2000,
+                   'shot_length': 1000}
 
 player_key_setup = [{'move_up': QtCore.Qt.Key_W,
                      'move_down': QtCore.Qt.Key_S,
@@ -61,47 +74,21 @@ debug_key_setup = {'debug_zoom_out': QtCore.Qt.Key_O,
                    'debug_area_move_right': QtCore.Qt.Key_L}
 
 
-class Window(QtGui.QWidget):
+class Window(QtGui.QMainWindow):
     def __init__(self):
         # Initialize the window
         super(Window, self).__init__()
 
-        self.fullscreen = False
         self.graphics = 'low'
 
         # Create a canvas for the game to run inside
-        self.game_frame = GameFrame(self, self.graphics)
-        self.game_frame.setFixedSize(550, 510)
+        self.game_canvas = GameCanvas(self, self.graphics)
+        self.game_canvas.setFixedSize(500, 500)
 
-        # Layout management
-        hbox = QtGui.QHBoxLayout()
-        vbox = QtGui.QVBoxLayout()
-
-        hbox.addWidget(self.game_frame)
-        vbox.addLayout(hbox)
-
-        self.setLayout(vbox)
+        self.setCentralWidget(self.game_canvas)
 
         self.setWindowTitle('Shooter')
         self.show()
-
-
-class GameFrame(QtGui.QFrame):
-    def __init__(self, parent, graphics):
-        QtGui.QFrame.__init__(self, parent)
-
-        self.game_canvas = GameCanvas(self, graphics)
-        self.game_canvas.setFixedSize(500, 500)
-
-        self.game_canvas.setFrameStyle(QtGui.QFrame.Box)
-        self.game_canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
-
-        hbox = QtGui.QHBoxLayout()
-        hbox.addWidget(self.game_canvas)
-        vbox = QtGui.QVBoxLayout()
-        vbox.addLayout(hbox)
-
-        self.setLayout(vbox)
 
 
 class GameCanvas(QtGui.QFrame):
@@ -110,11 +97,44 @@ class GameCanvas(QtGui.QFrame):
         QtGui.QFrame.__init__(self, parent)
 
         # Create a game instance
-        self.game = Game(player_key_setup, debug_key_setup, file_locations)
+        self.game = Game(player_defaults, player_key_setup, debug_key_setup, file_locations)
 
         # Var definition
         self.key_list = []
         self.graphics = graphics
+
+        self.game.game_cycle_timer = QtCore.QBasicTimer()
+        self.game.game_cycle_timer.start(self.game.game_cycle_interval, self)
+
+    def timerEvent(self, event):
+        if event.timerId() == self.game.game_cycle_timer.timerId():
+            # The game_cycle_timer fired the event
+
+            # Handle key presses
+            for key in self.key_list:
+                self.game.handle_key(key)
+
+            # Handle collision of player with a shot
+            for player in self.game.players:
+                # Check if the player is vulnerable
+                if not player.invulnerability_timer.isActive():
+                    # Generate a list of all players except for the current one
+                    remaining_players = copy.copy(self.game.players)
+                    remaining_players.remove(player)
+
+                    # Check if one of the shots of all those players hits the current player
+                    for shooter in remaining_players:
+                        if self.game.get_shot_intersection_with_player(player, shooter):
+                            self.game.hit_action(player, shooter)
+
+            # Handle creation of a powerup
+            self.game.try_create_powerup()
+
+            # Handle removal of eventual powerups from players
+            for player in self.game.players:
+                player.try_remove_powerup()
+
+            self.update()
 
     def paintEvent(self, event):
         """Reimplementation of the paint Event"""
@@ -133,7 +153,7 @@ class GameCanvas(QtGui.QFrame):
         painter.setTransform(transform)
 
         # Draw a frame of the game
-        self.game.draw_game(painter, self.graphics, defaults, file_locations)
+        self.game.draw_game(painter, self.graphics, defaults, powerup_colors, file_locations)
 
         painter.end()
 

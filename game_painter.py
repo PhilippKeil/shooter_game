@@ -3,6 +3,7 @@ from PyQt4.QtCore import QPointF as Qpf
 from PyQt4.QtCore import QRect as Qr
 from PyQt4.QtCore import QLine as Ql
 from PyQt4.QtCore import QLineF as Qlf
+from PyQt4.QtCore import Qt
 from PyQt4 import QtGui
 
 import os
@@ -137,7 +138,7 @@ class Paint():
             painter.drawPolygon(QtGui.QPolygon(point_list))
 
     @staticmethod
-    def draw_powerup(painter, powerup_list, default_values, file_locations):
+    def draw_powerups(painter, powerup_list, current_powerup, default_values, powerup_colors, file_locations):
         """Draws powerup platforms and the powerup if present"""
         for powerup in powerup_list:
             point_list = []
@@ -145,30 +146,30 @@ class Paint():
             brush = QtGui.QBrush()
             pen = QtGui.QPen()
 
-            if 'brush' in powerup.information:
-                brush.setStyle(powerup.information['brush'])
-            else:
-                brush.setStyle(default_values['obstacle_brush'])
+            if current_powerup in powerup.available_powerups:
+                # Set the brush that comes with the powerup
+                # If not given, set the default Brush
+                if 'brush' in powerup.information:
+                    brush.setStyle(powerup.information['brush'])
+                else:
+                    brush.setStyle(default_values['powerup_brush'])
 
-            if 'brush_color' in powerup.information:
-                brush.setColor(powerup.information['brush_color'])
+                # Set the Brush color according to the current powerup
+                brush.setColor(powerup_colors[current_powerup])
             else:
-                brush.setColor(default_values['obstacle_brush_color'])
+                # The powerup is not available at that platform
+                # Set brush to no brush
+                brush.setStyle(Qt.NoBrush)
 
             if 'pen' in powerup.information:
                 pen.setStyle(powerup.information['pen'])
             else:
-                pen.setStyle(default_values['obstacle_pen'])
+                pen.setStyle(default_values['powerup_pen'])
 
             if 'pen_color' in powerup.information:
                 pen.setColor(powerup.information['pen_color'])
             else:
-                pen.setColor(default_values['obstacle_pen_color'])
-
-            if 'texture' in powerup.information:
-                texture = QtGui.QPixmap()
-                texture.load(os.path.dirname(__file__) + file_locations['textures'] + polygon.information['texture'])
-                brush.setTexture(texture)
+                pen.setColor(default_values['powerup_pen_color'])
 
             painter.setBrush(brush)
             painter.setPen(pen)
@@ -176,7 +177,6 @@ class Paint():
             for point in powerup.polygon:
                 point_list.append(Qp(point.x(), point.y()))
             painter.drawPolygon(QtGui.QPolygon(point_list))
-
 
     @staticmethod
     def draw_player(painter, player, default_values, file_locations):
