@@ -263,7 +263,9 @@ class Map():
                                      QtCore.QPoint(385, 305)],
                         'available_powerups': {'move_faster': 10,
                                                'turn_faster': 5,
-                                               'shot_longer': 2000}},
+                                               'shot_longer': 2000},
+                        'pen': QtCore.Qt.SolidLine,
+                        'pen_color': QtCore.Qt.red},
 
                        {'type': 'powerup',
                         'position': [QtCore.QPoint(185, 275),

@@ -89,7 +89,7 @@ class Window(QtGui.QMainWindow):
         # Show the Window
         self.showFullScreen()
         # Set the game Canvas to be as big as possible
-        self.game_canvas.setFixedSize(self.height(), self.height())
+        # self.game_canvas.setFixedSize(self.height(), self.height())
 
         self.setCentralWidget(self.game_canvas)
 
@@ -153,7 +153,7 @@ class GameCanvas(QtGui.QFrame):
 
         # Painter transformation setup
         scaling = ((self.width() / float(self.game.get_viewable_map_area_size().width()),
-                    self.width() / float(self.game.get_viewable_map_area_size().height())))
+                    self.height() / float(self.game.get_viewable_map_area_size().height())))
         translate = self.game.get_viewable_map_area_pos()
         transform = QtGui.QTransform()
         transform.scale(scaling[0], scaling[1])
