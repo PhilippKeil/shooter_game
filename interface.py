@@ -83,12 +83,17 @@ class Window(QtGui.QMainWindow):
 
         # Create a canvas for the game to run inside
         self.game_canvas = GameCanvas(self, self.graphics)
-        self.game_canvas.setFixedSize(500, 500)
+        self.game_canvas.setFrameStyle(QtGui.QFrame.Box)
+        self.game_canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
+
+        # Show the Window
+        self.showFullScreen()
+        # Set the game Canvas to be as big as possible
+        self.game_canvas.setFixedSize(self.height(), self.height())
 
         self.setCentralWidget(self.game_canvas)
 
         self.setWindowTitle('Shooter')
-        self.show()
 
 
 class GameCanvas(QtGui.QFrame):
@@ -105,6 +110,9 @@ class GameCanvas(QtGui.QFrame):
 
         self.game.game_cycle_timer = QtCore.QBasicTimer()
         self.game.game_cycle_timer.start(self.game.game_cycle_interval, self)
+
+    def heightForWidth(self, w):
+        return w
 
     def timerEvent(self, event):
         if event.timerId() == self.game.game_cycle_timer.timerId():
