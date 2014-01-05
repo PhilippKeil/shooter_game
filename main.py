@@ -20,7 +20,7 @@ class Game(QObject):
         self.powerup_cooldown_timer.setSingleShot(True)
         self.current_powerup = ''
 
-        self.developer = False
+        self.developer = True
         if self.developer:
             self.camera_frame = None
         self.debug_key_setup = debug_key_setup

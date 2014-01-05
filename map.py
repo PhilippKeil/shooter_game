@@ -189,7 +189,7 @@ class Map():
                         'shot_pen_color': QtCore.Qt.blue},
 
                        {'type': 'player',
-                        'position': QtCore.QPoint(10, 50),
+                        'position': QtCore.QPoint(600, 50),
                         'size': QtCore.QSize(10, 10),
                         'turn_speed': 2,
                         'move_speed': 3,

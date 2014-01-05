@@ -87,7 +87,7 @@ class Window(QtGui.QMainWindow):
         self.game_canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
 
         # Show the Window
-        self.show()
+        self.showFullScreen()
         # Set the game Canvas to be as big as possible
         self.game_canvas.setFixedSize(self.height(), self.height())
 
