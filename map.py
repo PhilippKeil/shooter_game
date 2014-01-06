@@ -44,7 +44,7 @@ colors = {'Turquoise': QtGui.QColor().fromRgb(26, 188, 156),
 
 
 class Map():
-    def __init__(self, file_locations, load_type, save_file=None):
+    def __init__(self, file_locations, selected_level):
         # Contains every obstacle element that is present in the map
         # Used for drawing
         self.obstacle_list = []
@@ -66,12 +66,8 @@ class Map():
         self.background = None
         self.view_position = QtCore.QPoint(0, 0)
 
-        # Init the map and declare which map to use
-        if load_type == 'test':
-            # Just load the debug map
-            self.convert_data_to_level(self.test_map())
-        elif load_type == 'file':
-            self.convert_data_to_level(self.load_from_file(save_file))
+        # Init the map and load selected level
+        self.convert_data_to_level(self.load_from_file(selected_level))
 
     def get_player_information(self):
         return self.player_information

@@ -97,6 +97,8 @@ class Window(QtGui.QMainWindow):
         self.pre_game_frame.back_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(0))
         self.pre_game_frame.add_player_button.clicked.connect(self.add_player)
         self.pre_game_frame.remove_player_button.clicked.connect(self.remove_player)
+        self.pre_game_frame.update_level_list_button.clicked.connect(self.populate_level_list)
+        self.pre_game_frame.play_button.clicked.connect(self.init_game)
 
         self.setCentralWidget(self.widget_stack)
 
@@ -110,6 +112,21 @@ class Window(QtGui.QMainWindow):
 
     def remove_player(self):
         self.pre_game_frame.player_tabs.removeTab(self.pre_game_frame.player_tabs.count() - 1)
+
+    def populate_level_list(self):
+        self.pre_game_frame.level_list.clear()
+        for fl in glob.glob(os.path.dirname(__file__) + file_locations['levels'] + '*.map'):
+            self.pre_game_frame.level_list.addItem(fl.replace('\\', '/'))
+
+    def init_game(self):
+        selected_level = str(self.pre_game_frame.level_list.currentItem().text()).split('/')
+        player_count = self.pre_game_frame.player_tabs.count()
+        print('lvl: %s ; players: %s' % (selected_level, str(player_count)))
+        stripped_level = selected_level[len(selected_level) - 1]
+        print('stripped level: %s' % stripped_level)
+
+        self.widget_stack.addWidget(GameCanvas(self, stripped_level))
+        self.widget_stack.setCurrentIndex(3)
 
 
 class PlayerTab(QtGui.QWidget):
@@ -135,16 +152,18 @@ class PlayerTab(QtGui.QWidget):
 
 
 class GameCanvas(QtGui.QFrame):
-    def __init__(self, parent, graphics):
+    def __init__(self, parent, selected_level):
         # Initialize the UI element
         QtGui.QFrame.__init__(self, parent)
 
+        self.setFixedSize(500, 500)
+
         # Create a game instance
-        self.game = Game(player_defaults, player_key_setup, debug_key_setup, file_locations)
+        self.game = Game(selected_level, player_defaults, player_key_setup, debug_key_setup, file_locations)
 
         # Var definition
         self.key_list = []
-        self.graphics = graphics
+        self.graphics = 'low'
 
         self.game.game_cycle_timer = QtCore.QBasicTimer()
         self.game.game_cycle_timer.start(self.game.game_cycle_interval, self)

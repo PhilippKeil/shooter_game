@@ -169,6 +169,13 @@
        <item>
         <widget class="QListWidget" name="level_list"/>
        </item>
+       <item>
+        <widget class="QPushButton" name="update_level_list_button">
+         <property name="text">
+          <string>UPDATE</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
@@ -191,7 +198,7 @@
      <item>
       <widget class="QPushButton" name="play_button">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="minimumSize">
         <size>

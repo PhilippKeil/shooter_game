@@ -7,9 +7,9 @@ from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF, QTimer, QObject
 
 
 class Game(QObject):
-    def __init__(self, player_defaults, list_of_key_setups, debug_key_setup, file_locations):
+    def __init__(self, selected_level, player_defaults, list_of_key_setups, debug_key_setup, file_locations):
         QObject.__init__(self)
-        self.map = Map(file_locations, 'test')
+        self.map = Map(file_locations, selected_level)
         self.players = []
 
         self.game_cycle_interval = 10
@@ -238,10 +238,14 @@ class Game(QObject):
 
     def try_create_powerup(self):
         if not self.powerup_cooldown_timer.isActive():
+            # The cooldown to spawn a new powerup is over
             if self.current_powerup == '':
-                # Select one of the powerups in the powerup_effects dict as the new powerup
-                self.current_powerup = random.choice(self.map.powerup_effect_dict.keys())
-                print('New powerup: ' + self.current_powerup)
+                # no powerup has been generated yet
+                if len(self.map.powerup_effect_dict) != 0:
+                    # There are powerups on the map
+                    # Select one of the powerups in the powerup_effects dict as the new powerup
+                    self.current_powerup = random.choice(self.map.powerup_effect_dict.keys())
+                    print('New powerup: ' + self.current_powerup)
 
     @staticmethod
     def turn_player(player, direction):
