@@ -116,6 +116,7 @@ class Window(QtGui.QMainWindow):
         self.player_selection_frame.back_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(2))
         self.player_selection_frame.add_player_button.clicked.connect(self.add_player)
         self.player_selection_frame.remove_player_button.clicked.connect(self.remove_player)
+        self.player_selection_frame.play_button.clicked.connect(self.init_game)
 
         self.setCentralWidget(self.widget_stack)
 
@@ -148,19 +149,19 @@ class Window(QtGui.QMainWindow):
             self.preview_map_max_player_count = len(preview_map.player_information)
             self.preview_map_powerups = preview_map.powerup_effect_dict
 
+            self.player_selection_frame.level_name_label.setText(self.preview_map_name)
             self.player_selection_frame.max_players_label.setText(str(self.preview_map_max_player_count))
             self.player_selection_frame.powerups_label.setText(str(self.preview_map_powerups))
             self.widget_stack.setCurrentIndex(3)
 
     def init_game(self):
-        selected_level = str(self.pre_game_frame.level_list.currentItem().text()).split('/')
-        player_count = self.pre_game_frame.player_tabs.count()
+        selected_level = self.preview_map_name
+        player_count = self.player_selection_frame.player_tabs.count()
         print('lvl: %s ; players: %s' % (selected_level, str(player_count)))
-        stripped_level = selected_level[len(selected_level) - 1]
-        print('stripped level: %s' % stripped_level)
 
-        self.widget_stack.addWidget(GameCanvas(self, stripped_level))
-        self.widget_stack.setCurrentIndex(3)
+        if player_count != 0:
+            self.widget_stack.addWidget(GameCanvas(self, selected_level))
+            self.widget_stack.setCurrentIndex(4)
 
 
 class PlayerTab(QtGui.QWidget):
