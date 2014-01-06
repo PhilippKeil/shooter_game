@@ -6,6 +6,7 @@ import glob
 from PyQt4 import QtGui, QtCore, uic
 
 from main import Game
+import map
 
 config_file = 'config.cfg'
 
@@ -81,24 +82,40 @@ class Window(QtGui.QMainWindow):
         # Initialize the window
         super(Window, self).__init__()
 
+        self.preview_map_max_player_count = None
+        self.preview_map_powerups = None
+        self.preview_map_name = None
+
+        # LOAD WIDGETS
         self.main_frame = uic.loadUi(os.path.dirname(__file__) + file_locations['ui'] + 'main_menu.ui')
         self.settings_frame = uic.loadUi(os.path.dirname(__file__) + file_locations['ui'] + 'settings_menu.ui')
-        self.pre_game_frame = uic.loadUi(os.path.dirname(__file__) + file_locations['ui'] + 'pre_game_menu.ui')
+        self.level_selection_frame = uic.loadUi(os.path.dirname(__file__) + file_locations['ui'] + 'lvl_selec_menu.ui')
+        self.player_selection_frame = uic.loadUi(os.path.dirname(__file__) + file_locations['ui'] + 'pl_selec_menu.ui')
 
+        # LOAD WIDGETS INTO STACKED WIDGET
         self.widget_stack = QtGui.QStackedWidget()
-        self.widget_stack.addWidget(self.main_frame)      # 0
-        self.widget_stack.addWidget(self.settings_frame)  # 1
-        self.widget_stack.addWidget(self.pre_game_frame)  # 2
+        self.widget_stack.addWidget(self.main_frame)              # 0
+        self.widget_stack.addWidget(self.settings_frame)          # 1
+        self.widget_stack.addWidget(self.level_selection_frame)   # 2
+        self.widget_stack.addWidget(self.player_selection_frame)  # 3
 
+        # SIGNALS AND SLOTS
+        ### MAIN MENU ###
         self.main_frame.play_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(2))
         self.main_frame.settings_menu_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(1))
+
+        ### SETTINGS MENU ###
         self.settings_frame.back_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(0))
 
-        self.pre_game_frame.back_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(0))
-        self.pre_game_frame.add_player_button.clicked.connect(self.add_player)
-        self.pre_game_frame.remove_player_button.clicked.connect(self.remove_player)
-        self.pre_game_frame.update_level_list_button.clicked.connect(self.populate_level_list)
-        self.pre_game_frame.play_button.clicked.connect(self.init_game)
+        ### LEVEL SELECTION ###
+        self.level_selection_frame.player_selection_button.clicked.connect(self.check_level)
+        self.level_selection_frame.back_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(0))
+        self.level_selection_frame.update_level_list_button.clicked.connect(self.populate_level_list)
+
+        ### PLAYER SELECTION ###
+        self.player_selection_frame.back_button.clicked.connect(lambda: self.widget_stack.setCurrentIndex(2))
+        self.player_selection_frame.add_player_button.clicked.connect(self.add_player)
+        self.player_selection_frame.remove_player_button.clicked.connect(self.remove_player)
 
         self.setCentralWidget(self.widget_stack)
 
@@ -106,17 +123,34 @@ class Window(QtGui.QMainWindow):
         self.show()
 
     def add_player(self):
-        highest_player_id = self.pre_game_frame.player_tabs.count()
-        new_player_id = highest_player_id + 1
-        self.pre_game_frame.player_tabs.addTab(PlayerTab(new_player_id), 'PLAYER %s' % str(new_player_id))
+        highest_player_id = self.player_selection_frame.player_tabs.count()
+        if highest_player_id < self.preview_map_max_player_count:
+            new_player_id = highest_player_id + 1
+            self.player_selection_frame.player_tabs.addTab(PlayerTab(new_player_id), 'PLAYER %s' % str(new_player_id))
 
     def remove_player(self):
-        self.pre_game_frame.player_tabs.removeTab(self.pre_game_frame.player_tabs.count() - 1)
+        self.player_selection_frame.player_tabs.removeTab(self.player_selection_frame.player_tabs.count() - 1)
 
     def populate_level_list(self):
-        self.pre_game_frame.level_list.clear()
+        self.level_selection_frame.level_list.clear()
         for fl in glob.glob(os.path.dirname(__file__) + file_locations['levels'] + '*.map'):
-            self.pre_game_frame.level_list.addItem(fl.replace('\\', '/'))
+            fl = fl.replace('\\', '/').split('/')
+            fl = fl[len(fl) - 1]
+            self.level_selection_frame.level_list.addItem(fl)
+
+    def check_level(self):
+        try:
+            preview_map = map.Map(file_locations, self.level_selection_frame.level_list.currentItem().text())
+        except:
+            pass
+        else:
+            self.preview_map_name = self.level_selection_frame.level_list.currentItem().text()
+            self.preview_map_max_player_count = len(preview_map.player_information)
+            self.preview_map_powerups = preview_map.powerup_effect_dict
+
+            self.player_selection_frame.max_players_label.setText(str(self.preview_map_max_player_count))
+            self.player_selection_frame.powerups_label.setText(str(self.preview_map_powerups))
+            self.widget_stack.setCurrentIndex(3)
 
     def init_game(self):
         selected_level = str(self.pre_game_frame.level_list.currentItem().text()).split('/')
