@@ -8,7 +8,7 @@ from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF, QTimer, QObject
 class Game(QObject):
     def __init__(self, player_defaults, list_of_key_setups, debug_key_setup, file_locations):
         QObject.__init__(self)
-        self.map = Map(file_locations, 'test')
+        self.map = Map(file_locations, save_file='new_test_map.map')
         self.players = []
 
         self.game_cycle_interval = 10

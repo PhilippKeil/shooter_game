@@ -50,7 +50,7 @@ powerup_colors = {'turn_faster': QtCore.Qt.red,
 
 
 class Map():
-    def __init__(self, file_locations, load_type, save_file=None):
+    def __init__(self, file_locations, save_file=None):
         # Contains every obstacle element that is present in the map
         # Used for drawing
         self.obstacle_list = []
@@ -76,17 +76,16 @@ class Map():
         self.view_position = QtCore.QPoint(0, 0)
 
         # Init the map and declare which map to use
-        if load_type == 'test':
+        if save_file is not None:
+            self.convert_data_to_level(self.load_from_file(save_file))
+        else:
             # Just load the debug map
             self.convert_data_to_level(self.test_map())
-        elif load_type == 'file':
-            self.convert_data_to_level(self.load_from_file(save_file))
 
     def get_player_information(self):
         return self.player_information
 
     def convert_data_to_level(self, data):
-
         # index 0: crucial map information (dict)
         self.map_init(data[0]['map_size'], data[0]['view_size'], data[0]['view_pos'])
 
@@ -174,16 +173,6 @@ class Map():
 
     @staticmethod
     def test_map():
-        """
-        {'type': '',
-         'position': QtCore.QPoint(),
-         'brush': QtCore.Qt.,
-         'brush_color': QtCore.Qt.,
-         'pen': QtCore.Qt.,
-         'pen_color': QtCore.Qt.,
-         'texture': ''})
-        """
-
         # Map initialization for size, view_size, view_position
         init_data = {'map_size': QtCore.QSize(800, 600),
                      'view_size': QtCore.QSize(400, 400),
