@@ -110,7 +110,7 @@ class Map():
                 obstacle.set_brush(self.file_locations, texture_file=d['texture'])
 
             self.obstacle_list.append(obstacle)
-            self.outlines_list.append(obstacle.outlines())
+            self.outlines_list.append(obstacle.get_boundaries())
         elif d['type'] == 'background':
             if 'shadow' in d:
                 shadow = d['shadow']
@@ -300,7 +300,16 @@ class Obj():
     def __init__(self, polygon_points):
         self.polygon = QtGui.QPolygon(polygon_points)
 
-    def outlines(self):
+    def check_collision(self, rect):
+        if self.polygon.containsPoint(rect.topLeft(), QtCore.Qt.OddEvenFill) or\
+           self.polygon.containsPoint(rect.topRight(), QtCore.Qt.OddEvenFill) or\
+           self.polygon.containsPoint(rect.bottomLeft(), QtCore.Qt.OddEvenFill) or\
+           self.polygon.containsPoint(rect.bottomRight(), QtCore.Qt.OddEvenFill):
+            return True
+        else:
+            return False
+
+    def get_boundaries(self):
         # Iterate through every index of polygon
         # every index represents a point
         # outline = line(i, i - 1)
@@ -349,15 +358,6 @@ class Obstacle(Obj):
 
     def set_pen_color(self, pen_color=QtCore.Qt.green):
         self.pen.setColor(pen_color)
-
-    def check_collision(self, rect):
-        if self.polygon.containsPoint(rect.topLeft(), QtCore.Qt.OddEvenFill) or\
-           self.polygon.containsPoint(rect.topRight(), QtCore.Qt.OddEvenFill) or\
-           self.polygon.containsPoint(rect.bottomLeft(), QtCore.Qt.OddEvenFill) or\
-           self.polygon.containsPoint(rect.bottomRight(), QtCore.Qt.OddEvenFill):
-            return True
-        else:
-            return False
 
     def draw(self, painter):
         painter.setBrush(self.brush)

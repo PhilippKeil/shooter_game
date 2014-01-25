@@ -109,7 +109,7 @@ class Player():
     def check_standing_on_powerup(self, powerup_list):
         """Checks if a player is currently standing on a powerup platform. Returns the platform"""
         for powerup in powerup_list:
-            if powerup.polygon.containsPoint(self.pos, 0):
+            if powerup.check_collision(self.rect()):
                 # Player is currently standing on powerup platform
                 return powerup
             else:
