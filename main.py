@@ -1,7 +1,6 @@
 from player import Player
 from map import Map
 from game_painter import Paint
-import random
 
 from PyQt4.QtCore import QSize, QPoint, QPointF, QRect, QLineF, QTimer, QObject
 
@@ -13,12 +12,6 @@ class Game(QObject):
         self.players = []
 
         self.game_cycle_interval = 10
-
-        self.powerup_spawn_time = 5000
-        self.powerup_cooldown_timer = QTimer()
-        self.powerup_cooldown_timer.setInterval(self.powerup_spawn_time)
-        self.powerup_cooldown_timer.setSingleShot(True)
-        self.current_powerup = ''
 
         self.developer = True
         if self.developer:
@@ -48,19 +41,10 @@ class Game(QObject):
             # Therefore the player is able to move to the new_pos
             player.force_move(new_player_pos)
 
-            # Check if the player is now standing on a powerup platform
-            possible_powerup = player.check_standing_on_powerup(self.get_powerup_list())
-            if possible_powerup is not None:
-                # Player stands on a powerup platform
-                if not self.powerup_cooldown_timer.isActive():
-                    # The powerup cooldown is over
-                    if self.current_powerup in possible_powerup.available_powerups:
-                        # The powerup platform is supporting the current powerup
-                        if player.apply_powerup(self.current_powerup, possible_powerup.available_powerups):
-                            # Application of powerup was successful
-                            # Reset current powerup and start the cooldown
-                            self.current_powerup = ''
-                            self.powerup_cooldown_timer.start()
+            # Check if player is standing on a powerup platform
+            for platform in self.get_powerup_list():
+                if platform.check_collision(player.rect()):
+                    platform.pickup_powerup(player)
 
             # Check if the player left the viewable part of the map
             # Correct this part to show the player again
@@ -124,10 +108,11 @@ class Game(QObject):
             else:
                 print('No action defined for DEBUG_EVENT (' + action[1] + ')')
 
-    def draw_game(self, painter, graphic_setting, defaults, powerup_colors, file_locations):
-        # Draw the map background
+    def draw_game(self, painter, graphic_setting, defaults, file_locations):
+        # Draw the map backgrounds
         if graphic_setting == 'high':
-            Paint.draw_background(painter, self.get_map_background(), self.get_map_size())
+            for background in self.get_backgrounds():
+                background.draw(painter)
 
         # Draw the map limits
         Paint.draw_map_borders(painter,
@@ -142,7 +127,9 @@ class Game(QObject):
             obj.draw(painter)
 
         # Draw powerups
-        #Paint.draw_powerups(painter, self.get_powerup_list(), self.current_powerup, defaults, powerup_colors, file_locations)
+        container = self.get_powerup_list()
+        for obj in container:
+            obj.draw(painter)
 
         # Draw the model, indicator line and shot of every player
         for player in self.players:
@@ -232,18 +219,11 @@ class Game(QObject):
     def get_powerup_list(self):
         return self.map.powerup_list
 
-    def get_map_background(self):
-        return self.map.background
+    def get_backgrounds(self):
+        return self.map.background_list
 
     def try_shot(self, player, start_point, end_point):
         player.shot.set(start_point, end_point, self.map.outlines_list, self.map.size)
-
-    def try_create_powerup(self):
-        if not self.powerup_cooldown_timer.isActive():
-            if self.current_powerup == '':
-                # Select one of the powerups in the powerup_effects dict as the new powerup
-                self.current_powerup = random.choice(self.map.powerup_effect_dict.keys())
-                print('New powerup: ' + self.current_powerup)
 
     @staticmethod
     def turn_player(player, direction):

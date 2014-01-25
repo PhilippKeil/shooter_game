@@ -32,10 +32,6 @@ defaults = {'obstacle_brush': QtCore.Qt.SolidPattern,
             'powerup_pen': QtCore.Qt.DotLine,
             'powerup_pen_color': QtCore.Qt.black}
 
-powerup_colors = {'turn_faster': QtCore.Qt.red,
-                  'move_faster': QtCore.Qt.green,
-                  'shot_longer': QtCore.Qt.blue}
-
 player_defaults = {'move_speed': 2,
                    'turn_speed': 3,
                    'size': QtCore.QSize(10, 10),
@@ -79,7 +75,7 @@ class Window(QtGui.QMainWindow):
         # Initialize the window
         super(Window, self).__init__()
 
-        self.graphics = 'low'
+        self.graphics = 'high'
 
         # Create a canvas for the game to run inside
         self.game_canvas = GameCanvas(self, self.graphics)
@@ -135,13 +131,6 @@ class GameCanvas(QtGui.QFrame):
                         if self.game.get_shot_intersection_with_player(player, shooter):
                             self.game.hit_action(player, shooter)
 
-            # Handle creation of a powerup
-            self.game.try_create_powerup()
-
-            # Handle removal of eventual powerups from players
-            for player in self.game.players:
-                player.try_remove_powerup()
-
             self.update()
 
     def paintEvent(self, event):
@@ -161,7 +150,7 @@ class GameCanvas(QtGui.QFrame):
         painter.setTransform(transform)
 
         # Draw a frame of the game
-        self.game.draw_game(painter, self.graphics, defaults, powerup_colors, file_locations)
+        self.game.draw_game(painter, self.graphics, defaults, file_locations)
 
         painter.end()
 
