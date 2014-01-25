@@ -22,7 +22,7 @@ class Game(QObject):
 
         self.developer = True
         if self.developer:
-            self.camera_frame = None
+            self.camera_frame = QRect(self.get_viewable_map_area_pos(), self.get_viewable_map_area_size())
         self.debug_key_setup = debug_key_setup
         try:
             for player_id in range(len(self.map.player_information)):
@@ -137,10 +137,12 @@ class Game(QObject):
                                defaults)
 
         # Draw obstacles
-        Paint.draw_obstacles(painter, self.get_obstacle_list(), defaults, file_locations)
+        container = self.get_obstacle_list()
+        for obj in container:
+            obj.draw(painter)
 
         # Draw powerups
-        Paint.draw_powerups(painter, self.get_powerup_list(), self.current_powerup, defaults, powerup_colors, file_locations)
+        #Paint.draw_powerups(painter, self.get_powerup_list(), self.current_powerup, defaults, powerup_colors, file_locations)
 
         # Draw the model, indicator line and shot of every player
         for player in self.players:

@@ -85,16 +85,8 @@ class Player():
                 # Check if one of the edges of the player rect are inside an obstacle
 
                 # Iterate through the list of obstacles
-                for a in range(len(obstacle_list)):
-                    if obstacle_list[a].polygon.containsPoint(new_rect.topLeft(),
-                                                              QtCore.Qt.OddEvenFill) % 2 == 1 or \
-                            obstacle_list[a].polygon.containsPoint(new_rect.topRight(),
-                                                                   QtCore.Qt.OddEvenFill) % 2 == 1 or \
-                            obstacle_list[a].polygon.containsPoint(new_rect.bottomRight(),
-                                                                   QtCore.Qt.OddEvenFill) % 2 == 1 or \
-                            obstacle_list[a].polygon.containsPoint(new_rect.bottomLeft(),
-                                                                   QtCore.Qt.OddEvenFill) % 2 == 1:
-
+                for obj in obstacle_list:
+                    if obj.check_collision(new_rect):
                         # The player is inside an obstacle
                         # Break out of the loop because if player contains one obstacle its worthless to check any other
                         break

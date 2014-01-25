@@ -97,14 +97,20 @@ class Map():
             self.player_information.append(d)
         elif d['type'] == 'obstacle':
             # Create an obstacle
-            try:
-                obstacle = Obstacle(d)
-            except ValueError as e:
-                print('Could not create obstacle because ' + e.message)
-            else:
-                # Add the obstacle to the lists obstacle_list and outlines_list
-                self.obstacle_list.append(obstacle)
-                self.outlines_list.append(obstacle.outlines())
+            obstacle = Obstacle(d['position'], self.file_locations)
+            if 'brush' in d:
+                obstacle.set_brush(self.file_locations, brush=d['brush'])
+            if 'pen' in d:
+                obstacle.set_pen(pen=d['pen'])
+            if 'brush_color' in d:
+                obstacle.set_brush_color(brush_color=d['brush_color'])
+            if 'pen_color' in d:
+                obstacle.set_pen_color(pen_color=d['pen_color'])
+            if 'texture' in d:
+                obstacle.set_brush(self.file_locations, texture_file=d['texture'])
+
+            self.obstacle_list.append(obstacle)
+            self.outlines_list.append(obstacle.outlines())
         elif d['type'] == 'background':
             if 'shadow' in d:
                 shadow = d['shadow']
@@ -275,7 +281,7 @@ class Map():
                         'available_powerups': {'move_faster': 5,
                                                'turn_faster': 5}},
 
-                        {'type': 'powerup',
+                       {'type': 'powerup',
                         'position': [QtCore.QPoint(585, 275),
                                      QtCore.QPoint(615, 275),
                                      QtCore.QPoint(615, 305),
@@ -291,17 +297,8 @@ class Map():
 
 
 class Obj():
-    def __init__(self, d):
-        if 'position' in d:
-            self.polygon = QtGui.QPolygon(d['position'])
-        else:
-            # Raise an error
-            raise ValueError('No positions were given')
-
-        self.information = {}
-        for key in d:
-            if key != 'type' or key != 'position':
-                self.information[key] = d[key]
+    def __init__(self, polygon_points):
+        self.polygon = QtGui.QPolygon(polygon_points)
 
     def outlines(self):
         # Iterate through every index of polygon
@@ -320,8 +317,52 @@ class Obj():
 
 
 class Obstacle(Obj):
-    def __init__(self, d):
-        Obj.__init__(self, d)
+    def __init__(self, polygon_points, file_locations):
+        """initiation"""
+        Obj.__init__(self, polygon_points)
+        self.brush = QtGui.QBrush()
+        self.pen = QtGui.QPen()
+
+        self.set_pen()
+        self.set_pen_color()
+
+        self.set_brush(file_locations)
+        self.set_brush_color()
+
+    def set_brush(self, file_locations, brush=QtCore.Qt.SolidPattern, texture_file=None):
+        # Sets the brush to texture
+        # If no texture is given, set brush to parameter brush and brush_color
+        if texture_file is None:
+            self.brush.setStyle(brush)
+        else:
+            try:
+                texture = QtGui.QPixmap(os.path.dirname(__file__) + file_locations['textures'] + texture_file)
+                self.brush.setTexture(texture)
+            except:
+                self.brush.setStyle(brush)
+
+    def set_brush_color(self, brush_color=QtCore.Qt.red):
+        self.brush.setColor(brush_color)
+
+    def set_pen(self, pen=QtCore.Qt.SolidLine):
+        self.pen.setStyle(pen)
+
+    def set_pen_color(self, pen_color=QtCore.Qt.green):
+        self.pen.setColor(pen_color)
+
+    def check_collision(self, rect):
+        if self.polygon.containsPoint(rect.topLeft(), QtCore.Qt.OddEvenFill) or\
+           self.polygon.containsPoint(rect.topRight(), QtCore.Qt.OddEvenFill) or\
+           self.polygon.containsPoint(rect.bottomLeft(), QtCore.Qt.OddEvenFill) or\
+           self.polygon.containsPoint(rect.bottomRight(), QtCore.Qt.OddEvenFill):
+            return True
+        else:
+            return False
+
+    def draw(self, painter):
+        painter.setBrush(self.brush)
+        painter.setPen(self.pen)
+        painter.drawPolygon(self.polygon)
 
 
 class Powerup(Obj):
