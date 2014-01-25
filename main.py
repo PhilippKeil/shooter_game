@@ -51,11 +51,6 @@ class Game(QObject):
             self.construct_view(self.players, self.get_map_size(), 100)
             return True
 
-    def timerEvent(self, event):
-        if event.timerId == self.powerup_cooldown_timer.timerId():
-            # Powerup cooldown timer fired an event
-            self.create_powerup()
-
     def handle_key(self, key):
         action = (None, None)
 

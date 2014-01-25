@@ -14,14 +14,6 @@ class Paint():
         pass
 
     @staticmethod
-    def draw_background(painter, background, map_size):
-        brush = QtGui.QBrush()
-        brush.setTexture(background)
-
-        painter.setBrush(brush)
-        painter.drawRect(Qr(Qp(0, 0), map_size))
-
-    @staticmethod
     def draw_map_borders(painter, view_position, view_size, map_size, default_values):
         brush = QtGui.QBrush()
         brush.setStyle(default_values['border_brush'])
@@ -94,89 +86,6 @@ class Paint():
                                    line.p1().y()),
                                 Qp(line.p2().x(),
                                    line.p2().y())))
-
-    @staticmethod
-    def draw_obstacles(painter, obstacle_list, default_values, file_locations):
-        """Draws obstacles"""
-
-        for polygon in obstacle_list:
-            point_list = []
-
-            brush = QtGui.QBrush()
-            pen = QtGui.QPen()
-
-            if 'brush' in polygon.information:
-                brush.setStyle(polygon.information['brush'])
-            else:
-                brush.setStyle(default_values['obstacle_brush'])
-
-            if 'brush_color' in polygon.information:
-                brush.setColor(polygon.information['brush_color'])
-            else:
-                brush.setColor(default_values['obstacle_brush_color'])
-
-            if 'pen' in polygon.information:
-                pen.setStyle(polygon.information['pen'])
-            else:
-                pen.setStyle(default_values['obstacle_pen'])
-
-            if 'pen_color' in polygon.information:
-                pen.setColor(polygon.information['pen_color'])
-            else:
-                pen.setColor(default_values['obstacle_pen_color'])
-
-            if 'texture' in polygon.information:
-                texture = QtGui.QPixmap()
-                texture.load(os.path.dirname(__file__) + file_locations['textures'] + polygon.information['texture'])
-                brush.setTexture(texture)
-
-            painter.setBrush(brush)
-            painter.setPen(pen)
-
-            for point in polygon.polygon:
-                point_list.append(Qp(point.x(), point.y()))
-            painter.drawPolygon(QtGui.QPolygon(point_list))
-
-    @staticmethod
-    def draw_powerups(painter, powerup_list, current_powerup, default_values, powerup_colors, file_locations):
-        """Draws powerup platforms and the powerup if present"""
-        for powerup in powerup_list:
-            point_list = []
-
-            brush = QtGui.QBrush()
-            pen = QtGui.QPen()
-
-            if current_powerup in powerup.available_powerups:
-                # Set the brush that comes with the powerup
-                # If not given, set the default Brush
-                if 'brush' in powerup.information:
-                    brush.setStyle(powerup.information['brush'])
-                else:
-                    brush.setStyle(default_values['powerup_brush'])
-
-                # Set the Brush color according to the current powerup
-                brush.setColor(powerup_colors[current_powerup])
-            else:
-                # The powerup is not available at that platform
-                # Set brush to no brush
-                brush.setStyle(Qt.NoBrush)
-
-            if 'pen' in powerup.information:
-                pen.setStyle(powerup.information['pen'])
-            else:
-                pen.setStyle(default_values['powerup_pen'])
-
-            if 'pen_color' in powerup.information:
-                pen.setColor(powerup.information['pen_color'])
-            else:
-                pen.setColor(default_values['powerup_pen_color'])
-
-            painter.setBrush(brush)
-            painter.setPen(pen)
-
-            for point in powerup.polygon:
-                point_list.append(Qp(point.x(), point.y()))
-            painter.drawPolygon(QtGui.QPolygon(point_list))
 
     @staticmethod
     def draw_player(painter, player, default_values, file_locations):
